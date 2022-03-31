@@ -1,16 +1,9 @@
 package Config;
-
 import Music.MusicCommandManager;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
-
 import javax.security.auth.login.LoginException;
-
-import java.util.ArrayList;
-
-import static net.dv8tion.jda.api.requests.GatewayIntent.*;
 
 public class Bot {
     static JDA jda;
@@ -20,7 +13,7 @@ public class Bot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .enableCache(CacheFlag.EMOTE)
                 .addEventListeners(new MusicCommandManager())
-                .setActivity(Activity.listening("Lady Pank"))
+                .setActivity(Activity.listening("Ride on Time - Tatsuro Yamashita"))
                 .build();
     }
 
