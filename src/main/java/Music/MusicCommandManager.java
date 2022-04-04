@@ -29,7 +29,10 @@ public class MusicCommandManager extends ListenerAdapter {
                 "np", new NowPlaying(),
                 "nowplaying", new NowPlaying(),
                 "loop", new Loop(),
-                "help", new Help());
+                "help", new Help(),
+                "shuffle", new Shuffle(),
+                "mix", new Shuffle()
+        );
     }
 
     @Override
@@ -52,9 +55,9 @@ public class MusicCommandManager extends ListenerAdapter {
 
             try {
                 commandMap.get(command[0]).execute(event, pureCommand);
-
             } catch (Exception e) {
-                MessageEmbed embed = new KuronekoEmbed().setTitle("This is not a valid command Senpai").setDescription(command[0] + " is not a valid. Try again.").build();
+                e.printStackTrace();
+                MessageEmbed embed = new KuronekoEmbed().setTitle("This is not a valid command Senpai").setDescription(command[0] + " is currently not a valid command. Try again.").build();
                 new TemporaryMessage(event.getChannel(), embed).start();
             }
 
