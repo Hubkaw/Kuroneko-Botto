@@ -45,14 +45,8 @@ public class Play implements MusicCommand{
         if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
             guild.getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
         }
-        try{
-            if (!split[1].contains("youtu.be")) {
-                new URL(split[1]);
-            }
-            PlayerManager.getINSTANCE().loadAndPlay(guild, channel, "ytsearch: "+split[1]);
-        } catch (MalformedURLException e) {
-            PlayerManager.getINSTANCE().loadAndPlay(guild,channel,"ytsearch: "+split[1]);
-        }
+
+        PlayerManager.getINSTANCE().loadAndPlay(guild,channel,"ytsearch: "+split[1]);
 
     }
 }
