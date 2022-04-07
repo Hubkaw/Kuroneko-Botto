@@ -44,6 +44,7 @@ public class Play implements MusicCommand{
         }
         if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
             guild.getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
+            PlayerManager.getINSTANCE().getMusicManager(guild).scheduler.setLoop(false);
         }
 
         PlayerManager.getINSTANCE().loadAndPlay(guild,channel,"ytsearch: "+split[1]);
