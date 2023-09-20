@@ -13,7 +13,7 @@ public class Bot {
                 .enableCache(CacheFlag.VOICE_STATE)
                 .enableCache(CacheFlag.EMOTE)
                 .addEventListeners(new MusicCommandManager())
-                .setActivity(Activity.listening("Ride on Time - Tatsuro Yamashita"))
+                .setActivity(Activity.listening("Ride on Time"))
                 .build();
     }
 

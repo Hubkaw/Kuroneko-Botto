@@ -89,7 +89,8 @@ public class PlayerManager {
             public void loadFailed(FriendlyException e) {
                 e.printStackTrace();
                 MessageEmbed build = new KuronekoEmbed().setTitle("I cant play this Senpai")
-                        .setDescription("Its disabled in my country, private or age restricted >.<")
+                        .setDescription("Its disabled in my country, private or age restricted >.<\n" +
+                                e.getCause().getMessage())
                         .build();
                 new TemporaryMessage(channel, build).start();
             }
