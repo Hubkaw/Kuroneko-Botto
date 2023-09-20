@@ -10,10 +10,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,8 +87,7 @@ public class PlayerManager {
             public void loadFailed(FriendlyException e) {
                 e.printStackTrace();
                 MessageEmbed build = new KuronekoEmbed().setTitle("I cant play this Senpai")
-                        .setDescription("Its disabled in my country, private or age restricted >.<\n" +
-                                e.getCause().getMessage())
+                        .setDescription("Its disabled in my country, private or age restricted >.<")
                         .build();
                 new TemporaryMessage(channel, build).start();
             }

@@ -2,15 +2,8 @@ package Music;
 
 import Config.KuronekoEmbed;
 import Config.TemporaryMessage;
-import LavaPlayer.PlayerManager;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.DisconnectEvent;
-import net.dv8tion.jda.api.events.emote.EmoteAddedEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceDeafenEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent;
-import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,10 +22,7 @@ public class MusicCommandManager extends ListenerAdapter {
                 "np", new NowPlaying(),
                 "nowplaying", new NowPlaying(),
                 "loop", new Loop(),
-                "help", new Help(),
-                "shuffle", new Shuffle(),
-                "mix", new Shuffle()
-        );
+                "help", new Help());
     }
 
     @Override
@@ -55,22 +45,14 @@ public class MusicCommandManager extends ListenerAdapter {
 
             try {
                 commandMap.get(command[0]).execute(event, pureCommand);
+
             } catch (Exception e) {
-                e.printStackTrace();
-                MessageEmbed embed = new KuronekoEmbed().setTitle("This is not a valid command Senpai").setDescription(command[0] + " is currently not a valid command. Try again.").build();
+                MessageEmbed embed = new KuronekoEmbed().setTitle("This is not a valid command Senpai").setDescription(command[0] + " is not valid. Try again.").build();
                 new TemporaryMessage(event.getChannel(), embed).start();
             }
 
             event.getMessage().delete().queue();
         }
-    }
-
-    @Override
-    public void onGuildVoiceLeave(@NotNull GuildVoiceLeaveEvent event) {
-        if (event.getMember() == event.getGuild().getSelfMember()) {
-            PlayerManager.getINSTANCE().getMusicManager(event.getGuild()).scheduler.skipAll();
-        }
-        super.onGuildVoiceLeave(event);
     }
 
 }
