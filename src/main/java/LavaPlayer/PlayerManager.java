@@ -80,7 +80,7 @@ public class PlayerManager {
                 MessageEmbed build = new KuronekoEmbed().setTitle("I couldn't find it Senpai")
                         .setDescription("No results for: " + trackUrl)
                         .build();
-                channel.sendMessageEmbeds(build).queue();
+                new TemporaryMessage(channel, build).start();
             }
 
             @Override
