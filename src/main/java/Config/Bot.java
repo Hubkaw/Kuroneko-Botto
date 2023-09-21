@@ -1,4 +1,5 @@
 package Config;
+import Misc.OlekReply;
 import Music.MusicCommandManager;
 import net.dv8tion.jda.api.*;
 import net.dv8tion.jda.api.entities.Activity;
@@ -15,6 +16,7 @@ public class Bot {
                 .enableIntents(Config.getIntents())
                 .enableCache(Config.getFlags())
                 .addEventListeners(new MusicCommandManager())
+                .addEventListeners(new OlekReply())
                 .setActivity(Activity.listening("Ride on Time"))
                 .build();
     }
