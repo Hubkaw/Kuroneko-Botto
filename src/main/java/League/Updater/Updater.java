@@ -82,13 +82,14 @@ public class Updater extends Thread {
                 rankEntity.setTier(leagueEntry.getTier());
                 hasChanged = true;
             } else if (leagueEntry.getDivision() != rankEntity.getDivision()){
-                if (leagueEntry.getDivision().compare(rankEntity.getDivision()) > 0){
-                    MessageEmbed messageEmbed = premadeMessages.divUpMessage(leagueEntry);
-                    sendMessageToChannels(messageEmbed, summonerEntity);
-                } else {
-                    MessageEmbed messageEmbed = premadeMessages.divDownMessage(leagueEntry);
-                    sendMessageToChannels(messageEmbed, summonerEntity);
-                }
+                // Division change notifications
+//                if (leagueEntry.getDivision().compare(rankEntity.getDivision()) > 0){
+//                    MessageEmbed messageEmbed = premadeMessages.divUpMessage(leagueEntry);
+//                    sendMessageToChannels(messageEmbed, summonerEntity);
+//                } else {
+//                    MessageEmbed messageEmbed = premadeMessages.divDownMessage(leagueEntry);
+//                    sendMessageToChannels(messageEmbed, summonerEntity);
+//                }
                 rankEntity.setDivision(leagueEntry.getDivision());
                 hasChanged = true;
             }

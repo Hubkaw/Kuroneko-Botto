@@ -15,7 +15,7 @@ public class PremadeMessages {
         EmbedBuilder embedBuilder = createBuilder(leagueEntry.getSummoner());
         String queueName = leagueEntry.getQueue() == Queue.RANKED_SOLO ? "Solo Queue " : "Flex Queue ";
 
-        String desc = leagueEntry.getSummoner().getName() + " has ranked up to " + leagueEntry.getTier().name() + " in "+ queueName +"\n" +
+        String desc = leagueEntry.getSummoner().getName() + " has reached " + leagueEntry.getTier().name() + " in "+ queueName +"\n" +
                 "Current Rank: " + leagueEntry.getTier() + " " + leagueEntry.getDivision().name() + " " + leagueEntry.getLeaguePoints() + "LP";
         embedBuilder.setFooter(leagueEntry.getWins() + " wins - " + leagueEntry.getLosses() + " losses - (" + calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()) +"% win rate)");
         embedBuilder.setDescription(desc);
