@@ -1,0 +1,35 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-configuration SYSTEM
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+
+        <property name = "hibernate.dialect">
+            org.hibernate.dialect.MySQL5Dialect
+        </property>
+
+        <property name = "hibernate.connection.driver_class">
+            com.mysql.cj.jdbc.Driver
+        </property>
+
+        <!-- Assume test is the database name -->
+
+        <property name = "hibernate.connection.url">
+            jdbc:mysql://localhost:3306/kuroneko
+        </property>
+        <property name="hibernate.jdbc.batch_size">20</property>
+        <property name = "hibernate.connection.username">
+            root
+        </property>
+
+        <property name = "hibernate.connection.password"/>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.show_sql">false</property>
+
+        <mapping class="Database.Entity.SummonerEntity"/>
+        <mapping class="Database.Entity.ChannelEntity"/>
+        <mapping class="Database.Entity.RankEntity"/>
+        <mapping class="Database.Entity.ChampionMasteryEntity"/>
+
+    </session-factory>
+</hibernate-configuration>

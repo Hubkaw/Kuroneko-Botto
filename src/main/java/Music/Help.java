@@ -9,7 +9,8 @@ public class Help implements MusicCommand{
     public void execute(MessageReceivedEvent event, String pureCommand) {
         String help = """
                 
-                My prefix is ;. Staring with my name will also work.
+                My prefix is ';'.
+                Starting with my name or pinging me at the beggining will also work.
 
                 My music commands are:
                 ;**play** + -link or name-
@@ -18,7 +19,11 @@ public class Help implements MusicCommand{
                 ;**np**
                 ;**leave**
                 ;**loop**
-                ;**help**""";
+                ;**help**
+                
+                My League of Legends commands are:
+                ;**lolinfo <summonerName>**
+                ;**register <summonerName>**""";
         MessageEmbed help1 = new KuronekoEmbed().setTitle("Help").setDescription(help).build();
         event.getChannel().sendMessageEmbeds(help1).queue();
 

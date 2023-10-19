@@ -46,10 +46,7 @@ public class MusicCommandManager extends ListenerAdapter {
             try {
                 commandMap.get(command[0]).execute(event, pureCommand);
 
-            } catch (Exception e) {
-                MessageEmbed embed = new KuronekoEmbed().setTitle("This is not a valid command Senpai").setDescription(command[0] + " is not valid. Try again.").build();
-                new TemporaryMessage(event.getChannel(), embed).start();
-            }
+            } catch (Exception ignore) {}
 
             event.getMessage().delete().queue();
         }

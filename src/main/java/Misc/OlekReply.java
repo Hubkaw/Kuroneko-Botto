@@ -29,12 +29,9 @@ public class OlekReply extends ListenerAdapter {
         if (embed.getDescription() != null && embed.getDescription().toLowerCase().contains(string)){
             return true;
         }
-        if (embed.getFields().stream().anyMatch(
-                        f -> f.getValue() != null
-                                && f.getValue().toLowerCase().contains(string))){
-            return true;
-        }
-        return false;
+        return embed.getFields().stream().anyMatch(
+                f -> f.getValue() != null
+                        && f.getValue().toLowerCase().contains(string));
     }
 
     private void nieKumam(@NotNull MessageReceivedEvent event){
