@@ -14,8 +14,11 @@ public class KuronekoSessionFactory {
     }
 
     private static void createSessionFactory(){
-        Configuration configuration = new Configuration();
-        configuration.configure();
+        Configuration configuration = new Configuration()
+                .setProperty("hibernate.connection.username", Config.getConfig().getDbUser())
+                .setProperty("hibernate.connection.password", Config.getConfig().getDbPassword())
+                .configure();
+
         sessionFactory = configuration.buildSessionFactory();
     }
 }

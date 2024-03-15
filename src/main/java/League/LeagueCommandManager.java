@@ -19,7 +19,7 @@ public class LeagueCommandManager extends ListenerAdapter {
         commands.put("mastery", new PlayerMastery());
 
         Orianna.setDefaultRegion(Region.EUROPE_NORTH_EAST);
-        Orianna.setRiotAPIKey(Config.getRiotToken());
+        Orianna.setRiotAPIKey(Config.getConfig().getRiotToken());
     }
 
     @Override
