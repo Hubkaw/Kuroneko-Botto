@@ -17,10 +17,10 @@
         <property name="hibernate.jdbc.batch_size">20</property>
         <property name="hibernate.hbm2ddl.auto">create-drop</property>
         <property name="hibernate.show_sql">true</property>
-        <mapping class="Database.Entity.SummonerEntity"/>
-        <mapping class="Database.Entity.ChannelEntity"/>
-        <mapping class="Database.Entity.RankEntity"/>
-        <mapping class="Database.Entity.ChampionMasteryEntity"/>
+        <mapping class="com.kuroneko.Database.Entity.SummonerEntity"/>
+        <mapping class="com.kuroneko.Database.Entity.ChannelEntity"/>
+        <mapping class="com.kuroneko.Database.Entity.RankEntity"/>
+        <mapping class="com.kuroneko.Database.Entity.ChampionMasteryEntity"/>
 
     </session-factory>
 </hibernate-configuration>
