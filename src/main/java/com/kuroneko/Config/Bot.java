@@ -12,7 +12,7 @@ import javax.security.auth.login.LoginException;
 public class Bot {
     private static JDA jda;
 
-    public Bot() throws LoginException {
+    public Bot() {
         jda = JDABuilder.createDefault(Config.getConfig().getDiscordToken())
                 .enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                 .enableCache(CacheFlag.EMOJI, CacheFlag.VOICE_STATE)
