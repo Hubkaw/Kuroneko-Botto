@@ -56,9 +56,11 @@ public class TrackScheduler extends AudioEventAdapter {
         isLooped = looped;
     }
 
-    public void skipAll() {
+    public int skipAll() {
+        int size = queue.size();
         queue.clear();
         nextTrack();
+        return size;
     }
 
     @Override
