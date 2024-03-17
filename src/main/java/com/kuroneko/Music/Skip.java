@@ -13,38 +13,44 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
+import java.util.concurrent.TimeUnit;
+
 public class Skip implements MusicInteraction {
 
     @Getter
     private final String name = "skip";
 
     @Override
-    public ReplyRemover execute(SlashCommandInteractionEvent event) {
+    public void execute(SlashCommandInteractionEvent event) {
         Member selfMember = event.getGuild().getSelfMember();
         OptionMapping amount = event.getOption("amount");
         TrackScheduler scheduler = PlayerManager.getINSTANCE().getMusicManager(event.getGuild()).scheduler;
         if(event.getMember().getVoiceState().getChannel()==selfMember.getVoiceState().getChannel()) {
             if (amount == null || amount.getAsString().isBlank()){
                 scheduler.skip(1);
-                return new MessageDeleter(event.replyEmbeds(skipResponse(1)).complete());
+                event.replyEmbeds(skipResponse(1)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+                return;
             }
             if (amount.getAsString().equalsIgnoreCase("all")){
                 int i = scheduler.skipAll();
-                return new MessageDeleter(event.replyEmbeds(skipResponse(i)).complete());
+                event.replyEmbeds(skipResponse(i)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+                return;
             }
             try {
                 scheduler.skip(amount.getAsInt());
-                return new MessageDeleter(event.replyEmbeds(skipResponse(amount.getAsInt())).complete());
+                event.replyEmbeds(skipResponse(amount.getAsInt())).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+                return;
             } catch (Exception e){
                 MessageEmbed build = new KuronekoEmbed().setTitle("Baakaaaa!").setDescription("You can't provide " + amount.getAsString() + " here. Give me a number you mouth-breather").build();
-                return new MessageDeleter(event.replyEmbeds(build).complete());
+                event.replyEmbeds(build).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+                return;
             }
         }
         MessageEmbed build = new KuronekoEmbed()
                 .setTitle("Senpaiii~...")
                 .setDescription("We are not in the same voice channel. Come join me at: "
                         + selfMember.getVoiceState().getChannel().getAsMention() + "!").build();
-        return new MessageDeleter(event.replyEmbeds(build).complete());
+        event.replyEmbeds(build).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
     }
 
     private MessageEmbed skipResponse(int i){

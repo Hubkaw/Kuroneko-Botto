@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Queue implements MusicInteraction {
@@ -20,7 +21,7 @@ public class Queue implements MusicInteraction {
     private final String name = "queue";
 
     @Override
-    public ReplyRemover execute(SlashCommandInteractionEvent event) {
+    public void execute(SlashCommandInteractionEvent event) {
         AtomicInteger integer = new AtomicInteger(0);
         BlockingQueue<AudioTrack> queue = PlayerManager.getINSTANCE().getMusicManager(event.getGuild()).scheduler.getQueue();
         String[] tracks = new String[queue.size()];
@@ -35,7 +36,8 @@ public class Queue implements MusicInteraction {
             sb.append("The queue is empty.");
             MessageEmbed current_queue = new KuronekoEmbed().setTitle("Current Queue").setDescription(sb.toString()).build();
             InteractionHook complete = event.replyEmbeds(current_queue).complete();
-            return new MessageDeleter(complete);
+            complete.deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+
         } else {
             for (int i = 0; i < 20 && i < queue.size(); i++) {
                 if (tracks[i] != null)
@@ -43,8 +45,9 @@ public class Queue implements MusicInteraction {
             }
             MessageEmbed current_queue = new KuronekoEmbed().setTitle("Current Queue").setDescription(sb.toString()).build();
 
-            InteractionHook complete = event.replyEmbeds(current_queue).addActionRow().complete();
-            return new MessageDeleter(complete, 60);
+            InteractionHook complete = event.replyEmbeds(current_queue).complete();
+            complete.deleteOriginal().queueAfter(45, TimeUnit.SECONDS);
+
         }
     }
 

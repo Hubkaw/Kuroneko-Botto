@@ -1,7 +1,6 @@
 package com.kuroneko.LavaPlayer;
 
 import com.kuroneko.Config.KuronekoEmbed;
-import com.kuroneko.Config.TemporaryMessage;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -11,10 +10,12 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.interactions.InteractionHook;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class PlayerManager {
     private static PlayerManager INSTANCE;
@@ -36,9 +37,8 @@ public class PlayerManager {
         });
     }
 
-    public void loadAndPlay(Guild guild, MessageChannel channel, String trackUrl) {
+    public void loadAndPlay(Guild guild, InteractionHook event, String trackUrl) {
         final GuildMusicManager musicManager = getMusicManager(guild);
-
         audioPlayerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack audioTrack) {
@@ -48,7 +48,7 @@ public class PlayerManager {
                         .setDescription(audioTrack.getInfo().title + " has been added.")
                         .setThumbnail("http://img.youtube.com/vi/"+audioTrack.getInfo().identifier+"/0.jpg")
                         .build();
-                new TemporaryMessage(channel, embed).start();
+                event.sendMessageEmbeds(embed).complete().delete().queueAfter(12, TimeUnit.SECONDS);
             }
 
             @Override
@@ -61,35 +61,35 @@ public class PlayerManager {
                             .setThumbnail("http://img.youtube.com/vi/"+audioTrack.getInfo().identifier+"/0.jpg")
                             .setDescription(audioTrack.getInfo().title)
                             .build();
-                    new TemporaryMessage(channel, embed).start();
+                    event.sendMessageEmbeds(embed).complete().delete().queueAfter(12, TimeUnit.SECONDS);
                 } else {
                     tracks.forEach(
                             musicManager.scheduler::queue
                     );
                     MessageEmbed embed = new KuronekoEmbed()
                             .setTitle("Playlist added")
-                            .setDescription("Songs added: "+(musicManager.scheduler.getQueue().size()+1))
+                            .setDescription("Songs queued: "+(musicManager.scheduler.getQueue().size()+1))
                             .setThumbnail("http://img.youtube.com/vi/"+tracks.get(0).getInfo().identifier+"/0.jpg")
                             .build();
-                    new TemporaryMessage(channel, embed).start();
+                    event.sendMessageEmbeds(embed).complete().delete().queueAfter(12, TimeUnit.SECONDS);
                 }
             }
 
             @Override
             public void noMatches() {
-                MessageEmbed build = new KuronekoEmbed().setTitle("I couldn't find it Senpai")
+                MessageEmbed embed = new KuronekoEmbed().setTitle("I couldn't find it Senpai")
                         .setDescription("No results for: " + trackUrl)
                         .build();
-                new TemporaryMessage(channel, build).start();
+                event.sendMessageEmbeds(embed).complete().delete().queueAfter(12, TimeUnit.SECONDS);
             }
 
             @Override
             public void loadFailed(FriendlyException e) {
                 e.printStackTrace();
-                MessageEmbed build = new KuronekoEmbed().setTitle("I cant play this Senpai")
+                MessageEmbed embed = new KuronekoEmbed().setTitle("I cant play this Senpai")
                         .setDescription("Its disabled in my country, private or age restricted >.<")
                         .build();
-                new TemporaryMessage(channel, build).start();
+                event.sendMessageEmbeds(embed).complete().delete().queueAfter(12, TimeUnit.SECONDS);
             }
 
         });

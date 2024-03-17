@@ -4,7 +4,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 
 public interface MusicInteraction {
-    ReplyRemover execute(SlashCommandInteractionEvent event);
+    void execute(SlashCommandInteractionEvent event);
     String getName();
     CommandData getCommand();
 }

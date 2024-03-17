@@ -7,14 +7,10 @@ import org.reflections.Reflections;
 
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class MusicInteractionManager extends ListenerAdapter {
 
     private final Map<String, com.kuroneko.Music.MusicInteraction> interactionMap = new TreeMap<>();
-    ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
     public MusicInteractionManager() {
         Reflections reflections = new Reflections("com.kuroneko.Music");
@@ -34,15 +30,12 @@ public class MusicInteractionManager extends ListenerAdapter {
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
 
         MusicInteraction musicInteraction = interactionMap.get(event.getName());
+
         if (musicInteraction == null) {
             return;
         }
 
-        ReplyRemover executed = musicInteraction.execute(event);
-
-        if (executed != null) {
-            executorService.schedule(executed::getAction, executed.getDelay(), TimeUnit.SECONDS);
-        }
+        musicInteraction.execute(event);
     }
 
     @Override
