@@ -75,16 +75,27 @@ public class RandomCommand extends ListenerAdapter {
         if (diceSize > 1000 || diceAmount > 100) {
             return rollError();
         }
+
+        int[] rolls = new int[diceAmount];
+        for (int i = 0; i < diceAmount; i++) {
+            rolls[i] = random.nextInt(diceSize) + 1;
+        }
+
         StringBuilder sb = new StringBuilder("[ ");
+
+        int sum = 0;
 
         for (int i = 0; i < diceAmount; i++) {
             if (i != 0){
                 sb.append(" -");
             }
-            sb.append(" ").append(random.nextInt(diceSize) + 1).append(" ");
+            sb.append(" ").append(rolls[i]).append(" ");
+            sum+= rolls[i];
         }
-        sb.append("]");
-
+        sb.append("] ");
+        if (diceAmount > 1){
+            sb.append("- [SUM: ").append(sum).append("] - [AVG: ").append(sum / diceAmount).append("] ");
+        }
         return new EmbedBuilder()
                 .setTitle("Roll " + diceAmount + "d" + diceSize + " for " + author)
                 .setDescription(sb.toString())
