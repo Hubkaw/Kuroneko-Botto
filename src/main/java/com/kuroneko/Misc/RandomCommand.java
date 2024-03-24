@@ -12,6 +12,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.awt.*;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 
 public class RandomCommand extends ListenerAdapter {
 
-    private final String[] words = new String[]{"100", "d6", "4d6", "12d4", "100d100", "6d10"};
+    private final String[] words = new String[]{"100", "10", "d6", "4d6", "12d4", "100d100"};
 
     private final Pattern dicePattern = Pattern.compile("([0-9]*)[d|k]([0-9]+)");
     private final Random random = new Random(System.currentTimeMillis());
@@ -94,7 +95,8 @@ public class RandomCommand extends ListenerAdapter {
         }
         sb.append("] ");
         if (diceAmount > 1){
-            sb.append("- [SUM: ").append(sum).append("] - [AVG: ").append(sum / diceAmount).append("] ");
+            String avg = new DecimalFormat("#.###").format(((double) sum) / ((double) diceAmount));
+            sb.append("- [SUM: ").append(sum).append("] - [AVG: ").append(avg).append("] ");
         }
         return new EmbedBuilder()
                 .setTitle("Roll " + diceAmount + "d" + diceSize + " for " + author)
