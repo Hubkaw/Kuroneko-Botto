@@ -1,8 +1,11 @@
 package com.kuroneko.Music;
 
+import com.kuroneko.LavaPlayer.PlayerManager;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 
 import java.util.Map;
@@ -41,5 +44,14 @@ public class MusicInteractionManager extends ListenerAdapter {
     @Override
     public void onGuildReady(GuildReadyEvent event) {
         interactionMap.forEach((k, i) -> event.getGuild().upsertCommand(i.getCommand()).queue());
+    }
+
+    @Override
+    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
+        if (event.getJDA().getSelfUser().getId().equals(event.getMember().getId())
+        && (event.getNewValue() == null || event.getChannelJoined() == null)){
+            PlayerManager.getINSTANCE().getMusicManager(event.getGuild()).scheduler.skipAll();
+        }
+        super.onGuildVoiceUpdate(event);
     }
 }

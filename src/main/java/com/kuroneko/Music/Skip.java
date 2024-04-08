@@ -27,8 +27,8 @@ public class Skip implements MusicInteraction {
         TrackScheduler scheduler = PlayerManager.getINSTANCE().getMusicManager(event.getGuild()).scheduler;
         if(event.getMember().getVoiceState().getChannel()==selfMember.getVoiceState().getChannel()) {
             if (amount == null || amount.getAsString().isBlank()){
-                scheduler.skip(1);
-                event.replyEmbeds(skipResponse(1)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+                int skipped = scheduler.skip(1);
+                event.replyEmbeds(skipResponse(skipped)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
                 return;
             }
             if (amount.getAsString().equalsIgnoreCase("all")){
@@ -37,8 +37,8 @@ public class Skip implements MusicInteraction {
                 return;
             }
             try {
-                scheduler.skip(amount.getAsInt());
-                event.replyEmbeds(skipResponse(amount.getAsInt())).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
+                int skipped = scheduler.skip(amount.getAsInt());
+                event.replyEmbeds(skipResponse(skipped)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
                 return;
             } catch (Exception e){
                 MessageEmbed build = new KuronekoEmbed().setTitle("Baakaaaa!").setDescription("You can't provide " + amount.getAsString() + " here. Give me a number you mouth-breather").build();

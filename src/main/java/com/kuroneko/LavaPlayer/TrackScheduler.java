@@ -47,9 +47,11 @@ public class TrackScheduler extends AudioEventAdapter {
         });
     }
 
-    public void skip(int i) {
+    public int skip(int i) {
+        int skipped = i > queue.size() ? queue.size() : i;
         queue.drainTo(new ArrayList<>(), i - 1);
         nextTrack();
+        return skipped;
     }
 
     public void setLoop(boolean looped) {
