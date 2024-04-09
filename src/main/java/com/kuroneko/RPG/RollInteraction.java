@@ -1,57 +1,58 @@
-package com.kuroneko.Misc;
+package com.kuroneko.RPG;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class RandomCommand extends ListenerAdapter {
+public class RollInteraction implements RPGInteraction {
 
     private final String[] words = new String[]{"100", "10", "d6", "4d6", "12d4", "100d100"};
 
     private final Pattern dicePattern = Pattern.compile("([0-9]*)[d|k]([0-9]+)");
     private final Random random = new Random(System.currentTimeMillis());
 
-    @Override
-    public void onGuildReady(GuildReadyEvent event) {
-        event.getGuild().upsertCommand(Commands.slash("roll", "Roll dice")
-                .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true)).queue();
-        super.onGuildReady(event);
-    }
 
-    @Override
-    public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
-        if (event.getName().equals("roll") && event.getFocusedOption().getName().equals("rolls")) {
-            List<Command.Choice> options = Stream.of(words)
-                    .filter(word -> word.startsWith(event.getFocusedOption().getValue())) // only display words that start with the user's current input
-                    .map(word -> new Command.Choice(word, word)) // map the words to choices
-                    .collect(Collectors.toList());
-            event.replyChoices(options).queue();
+    public void autocomplete(CommandAutoCompleteInteractionEvent event) {
+        String value = event.getFocusedOption().getValue();
+        if (value.isBlank()) {
+            event.replyChoices(Arrays.stream(words).map(word -> new Command.Choice(word, word)).toList()).queue();
+            return;
         }
+        if (value.matches("([0-9]+)?[d|k|D|K]")){
+            event.replyChoices(List.of(new Command.Choice(value+"100",value+"100"),new Command.Choice(value+"10",value+"10"),new Command.Choice(value+"6",value+"6"))).queue();
+            return;
+        }
+        if (value.matches("[1-9]+")){
+            event.replyChoices(new Command.Choice(value+"00",value+"00"), new Command.Choice(value+"0",value+"0"), new Command.Choice(value,value)).queue();
+            return;
+        }
+        if (value.matches("([0-9]+[d|k|D|K])?[1-9][0-9]+")){
+            event.replyChoices(new Command.Choice(value, value)).queue();
+            return;
+        }
+        event.replyChoices(Arrays.stream(words).map(word -> new Command.Choice(word, word)).toList()).queue();
     }
 
     @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (event.getName().equals("roll")){
+    public void execute(SlashCommandInteractionEvent event) {
+        if (event.getName().equals(getName())){
             try {
                 OptionMapping dices = event.getInteraction().getOption("rolls");
                 if (dices == null) {
-                    event.replyEmbeds(rollError()).queue();
+                    sendMessage(event, rollError());
                     return;
                 }
                 Matcher matcher = dicePattern.matcher(dices.getAsString());
@@ -60,14 +61,14 @@ public class RandomCommand extends ListenerAdapter {
                     int die = matcher.group(1).isBlank() ? 1 : Integer.parseInt(matcher.group(1));
                     int size = Integer.parseInt(matcher.group(2));
                     MessageEmbed embed = rollMessage(die, size, event.getMember().getEffectiveName());
-                    event.replyEmbeds(embed).queue();
+                    sendMessage(event,embed);
                     return;
                 }
                 int size = Integer.parseInt(dices.getAsString());
                 MessageEmbed embed = rollMessage(1, size, event.getMember().getEffectiveName());
-                event.replyEmbeds(embed).queue();
+                sendMessage(event,embed);
             } catch (Exception e) {
-                event.replyEmbeds(rollError()).queue();
+                sendMessage(event,rollError());
             }
         }
     }
@@ -111,5 +112,25 @@ public class RandomCommand extends ListenerAdapter {
                 .setDescription("Wrong format baaaaaka~~")
                 .setColor(new Color(110, 0, 127))
                 .build();
+    }
+
+    @Override
+    public String getName() {
+        return "roll";
+    }
+
+    @Override
+    public CommandData getCommand() {
+        return Commands.slash(getName(), "Roll dice")
+                .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true);
+    }
+
+    @Override
+    public boolean isAutoCompleted() {
+        return true;
+    }
+
+    protected void sendMessage(SlashCommandInteractionEvent event, MessageEmbed embed){
+        event.replyEmbeds(embed).setEphemeral(false).queue();
     }
 }
