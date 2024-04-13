@@ -13,7 +13,6 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -33,7 +32,6 @@ public class RegisterCharacterInteraction implements SlashInteraction {
 
     @Override
     public void execute(SlashCommandInteractionEvent event) {
-        InteractionHook deferred = event.deferReply(true).complete();
         Map<Ability, Integer> abilityMap;
         try {
             abilityMap = mapOptions(event);
@@ -42,7 +40,7 @@ public class RegisterCharacterInteraction implements SlashInteraction {
                     .setTitle("Błąd")
                     .setDescription("Nie mogę zapisać tej postaci. Upewnij się że statystyki są w przedziale 0-100.")
                     .build();
-            deferred.sendMessageEmbeds(embed).setEphemeral(true).queue();
+            event.replyEmbeds(embed).setEphemeral(true).queue();
             return;
         }
 
@@ -53,7 +51,7 @@ public class RegisterCharacterInteraction implements SlashInteraction {
                     .setTitle("Błąd")
                     .setDescription("Już masz postać przypisaną do tego kanału. Żeby ją usunąć użyj **/reset-character**, żeby zmienić statystykę użyj **/set-stat**.")
                     .build();
-            deferred.sendMessageEmbeds(embed).setEphemeral(true).queue();
+            event.replyEmbeds(embed).setEphemeral(true).queue();
             return;
         }
         PlayerCharacterEntity playerCharacterEntity = playerCharacterRepository.save(createCharacter(event.getUser().getId(), event.getOption("name").getAsString(), channelEntity, abilityMap));
@@ -63,7 +61,7 @@ public class RegisterCharacterInteraction implements SlashInteraction {
                 .setTitle("Bohater zapisany")
                 .setDescription(event.getUser().getEffectiveName() + " przypisał bohatera " + playerCharacterEntity.getName() + " jako swoją postać na tym kanale." + " \n" + RPGInteractionUtils.writeDescription(playerCharacterEntity.getStats()))
                 .build();
-        deferred.sendMessageEmbeds(build).queue();
+        event.replyEmbeds(build).queue();
     }
 
     @Override
