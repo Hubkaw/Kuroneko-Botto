@@ -1,10 +1,10 @@
-package com.kuroneko.Database.Entity;
+package com.kuroneko.database.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,13 +25,6 @@ public class ChannelEntity {
     @Column
     private Long guildId;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST},
-            fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "registered_in_channels",
-            joinColumns = {@JoinColumn(name = "channelId")},
-            inverseJoinColumns = {@JoinColumn(name = "puuid")})
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Set<SummonerEntity> summoners = new HashSet<>();
+    @OneToMany(mappedBy = "channel")
+    private Set<PlayerCharacterEntity> characters = new HashSet<>();
 }

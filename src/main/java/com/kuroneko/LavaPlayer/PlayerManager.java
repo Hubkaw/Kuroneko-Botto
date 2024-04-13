@@ -1,6 +1,6 @@
-package com.kuroneko.LavaPlayer;
+package com.kuroneko.lavaplayer;
 
-import com.kuroneko.Config.KuronekoEmbed;
+import com.kuroneko.misc.KuronekoEmbed;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -11,14 +11,15 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
+import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class PlayerManager {
-    private static PlayerManager INSTANCE;
     private final Map<Long, GuildMusicManager> musicManagers;
     private final AudioPlayerManager audioPlayerManager;
 
@@ -93,11 +94,5 @@ public class PlayerManager {
             }
 
         });
-    }
-
-    public static PlayerManager getINSTANCE() {
-        if (INSTANCE == null)
-            INSTANCE = new PlayerManager();
-        return INSTANCE;
     }
 }

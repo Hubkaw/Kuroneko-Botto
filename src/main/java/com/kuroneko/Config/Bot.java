@@ -1,29 +1,26 @@
-package com.kuroneko.Config;
-import com.kuroneko.Misc.OlekReply;
-import com.kuroneko.RPG.RPGManager;
-import com.kuroneko.Music.MusicInteractionManager;
-import net.dv8tion.jda.api.*;
+package com.kuroneko.config;
+
+import com.kuroneko.interaction.SlashInteractionManager;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import org.springframework.context.annotation.Configuration;
 
-
+@Configuration
 public class Bot {
-    private static JDA jda;
 
-    public Bot() {
-        jda = JDABuilder.createDefault(Config.getConfig().getDiscordToken())
+    private final JDA JDA;
+
+    public Bot(SlashInteractionManager sim) {
+        JDA = JDABuilder.createDefault(ConfigLoader.getConfig().getDiscordToken())
                 .enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                 .enableCache(CacheFlag.EMOJI, CacheFlag.VOICE_STATE)
-                .addEventListeners(new MusicInteractionManager())
-                .addEventListeners(new RPGManager())
-                .addEventListeners(new OlekReply())
+                .addEventListeners(sim)
                 .setActivity(Activity.listening("Ride on Time"))
                 .build();
-
     }
 
-    public static JDA getJda() {
-        return jda;
-    }
+
 }
