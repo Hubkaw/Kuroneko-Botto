@@ -15,13 +15,10 @@ import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import org.springframework.stereotype.Component;
-
 import java.util.List;
 import java.util.Optional;
 
-@Component
-public class CheckStatInteraction implements SlashInteraction {
+abstract class CheckStatInteraction implements SlashInteraction {
 
     private final PlayerCharacterRepository characterRepository;
     private final List<String> abilityNames;
@@ -61,7 +58,7 @@ public class CheckStatInteraction implements SlashInteraction {
         } catch (Exception e){
             bonus = 0;
         }
-        int dice = rng.rollInt(100);
+        int dice = rng.rollInt(100) + 1;
 
         boolean hasPassed = characterStat + bonus >= dice;
 
@@ -94,13 +91,11 @@ public class CheckStatInteraction implements SlashInteraction {
         if (character.get().getImageLink() != null){
             embedBuilder.setThumbnail(character.get().getImageLink());
         }
-        event.replyEmbeds(embedBuilder.build()).queue();
+        sendMessage(event, embedBuilder.build());
     }
 
     @Override
-    public String getName() {
-        return "check";
-    }
+    public abstract String getName();
 
     @Override
     public CommandData getCommand() {
@@ -112,7 +107,7 @@ public class CheckStatInteraction implements SlashInteraction {
 
     @Override
     public void autoComplete(CommandAutoCompleteInteractionEvent event) {
-        if (event.getName().equals("check") && event.getFocusedOption().getName().equals("stat")) {
+        if (event.getFocusedOption().getName().equals("stat")) {
             List<Command.Choice> list = abilityNames.stream()
                     .filter(s -> s.toLowerCase().startsWith(event.getOption("stat").getAsString().toLowerCase()))
                     .map(s -> new Command.Choice(s, s))
@@ -160,4 +155,7 @@ public class CheckStatInteraction implements SlashInteraction {
             }
         }
     }
+
+    abstract void sendMessage(SlashCommandInteractionEvent event, MessageEmbed embed);
+
 }
