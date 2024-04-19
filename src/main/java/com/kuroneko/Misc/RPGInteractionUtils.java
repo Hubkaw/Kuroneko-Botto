@@ -3,7 +3,7 @@ package com.kuroneko.misc;
 import com.kuroneko.database.entity.CharacterStatsEntity;
 
 public class RPGInteractionUtils {
-    public static String writeDescription(CharacterStatsEntity cse) {
+    public static String writeCharacterDescription(CharacterStatsEntity cse) {
         return """
                 ```
                 +------+------+------+-----+------+------+------+------+
@@ -22,6 +22,14 @@ public class RPGInteractionUtils {
                 formatStat(cse.getWillPower()),
                 formatStat(cse.getFelicity())
         );
+    }
+
+    public static String getCheckDescription() {
+        return """
+                %s %s umiejętności: %s
+                Trudność: **%s** Umiejętność: **%s** %s
+                %s
+                """;
     }
     private static String formatStat(int stat) {
         return stat < 10 ? " " + stat : Integer.toString(stat);
