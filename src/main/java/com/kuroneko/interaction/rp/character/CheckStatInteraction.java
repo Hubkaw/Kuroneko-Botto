@@ -7,6 +7,7 @@ import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.Ability;
 import com.kuroneko.misc.KuronekoEmbed;
 import com.kuroneko.misc.RNG;
+import com.kuroneko.misc.RPGInteractionUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -52,12 +53,10 @@ abstract class CheckStatInteraction implements SlashInteraction {
             return;
         }
         int characterStat = getCharacterStat(character.get(), event.getOption("stat").getAsString());
-        int bonus;
+        int bonus = 0;
         try {
             bonus = event.getOption("bonus").getAsInt();
-        } catch (Exception e){
-            bonus = 0;
-        }
+        } catch (Exception ignore){}
         int dice = rng.rollInt(100) + 1;
 
         boolean hasPassed = characterStat + bonus >= dice;
@@ -82,9 +81,15 @@ abstract class CheckStatInteraction implements SlashInteraction {
             }
         }
 
-        String desc = character.get().getName() + (hasPassed ? " **zdał** test" : " **nie zdał** testu") + " umiejętności: **" + Ability.valueOf(event.getOption("stat").getAsString().toUpperCase()).fullName + "**\n" +
-                "Trudność: **" + dice + "** Umiejętność: **" + characterStat
-                + (bonus != 0 ? "** Bonus: **" + bonus : "") + "**\n" + successTier;
+        String desc = RPGInteractionUtils.getCheckDescription().formatted(
+                character.get().getName(),
+                hasPassed ? "**zdał** test" : "**nie zdał** testu",
+                Ability.valueOf(event.getOption("stat").getAsString().toUpperCase()).fullName,
+                dice,
+                characterStat,
+                bonus == 0 ? "" : ("Bonus: **%s**".formatted(bonus)),
+                successTier
+        );
 
         EmbedBuilder embedBuilder = new KuronekoEmbed().setTitle("Test Umiejętności " + character.get().getName() + (hasPassed ? " :white_check_mark:" : " :cross_mark:"))
                 .setDescription(desc);

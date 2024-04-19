@@ -59,7 +59,7 @@ public class RegisterCharacterInteraction implements SlashInteraction {
         MessageEmbed build = new EmbedBuilder()
                 .setColor(new Color(110, 0, 127))
                 .setTitle("Bohater zapisany")
-                .setDescription(event.getUser().getEffectiveName() + " przypisał bohatera " + playerCharacterEntity.getName() + " jako swoją postać na tym kanale." + " \n" + RPGInteractionUtils.writeDescription(playerCharacterEntity.getStats()))
+                .setDescription(event.getUser().getEffectiveName() + " przypisał bohatera " + playerCharacterEntity.getName() + " jako swoją postać na tym kanale." + " \n" + RPGInteractionUtils.writeCharacterDescription(playerCharacterEntity.getStats()))
                 .build();
         event.replyEmbeds(build).queue();
     }

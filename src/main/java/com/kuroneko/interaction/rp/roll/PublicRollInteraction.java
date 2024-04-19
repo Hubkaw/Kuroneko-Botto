@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class PublicRollInteraction extends  RollInteraction {
+public class PublicRollInteraction extends RollInteraction {
 
     private RNG rng;
 

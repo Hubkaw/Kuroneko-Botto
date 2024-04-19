@@ -33,7 +33,7 @@ public class ShowCharacterInfo implements SlashInteraction {
             return;
         }
 
-        String description = RPGInteractionUtils.writeDescription(character.get().getStats());
+        String description = RPGInteractionUtils.writeCharacterDescription(character.get().getStats());
 
         MessageEmbed build = new EmbedBuilder()
                 .setColor(new Color(110, 0, 127))
