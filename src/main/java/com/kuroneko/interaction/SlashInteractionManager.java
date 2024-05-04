@@ -1,6 +1,7 @@
 package com.kuroneko.interaction;
 
 import com.kuroneko.lavaplayer.PlayerManager;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -16,12 +17,9 @@ import java.util.TreeMap;
 
 @Component
 public class SlashInteractionManager extends ListenerAdapter {
-    private final PlayerManager playerManager;
     private final Map<String, SlashInteraction> interactionMap = new TreeMap<>();
 
-    public SlashInteractionManager(Set<SlashInteraction> slashInteractions,
-                                   PlayerManager playerManager) {
-        this.playerManager = playerManager;
+    public SlashInteractionManager(Set<SlashInteraction> slashInteractions) {
         slashInteractions.forEach(mi -> interactionMap.put(mi.getName(), mi));
     }
 
@@ -46,13 +44,5 @@ public class SlashInteractionManager extends ListenerAdapter {
     @Override
     public void onGuildReady(GuildReadyEvent event) {
         interactionMap.forEach((k, i) -> event.getGuild().upsertCommand(i.getCommand()).queue());
-    }
-
-    @Override
-    public void onGuildVoiceUpdate(@NotNull GuildVoiceUpdateEvent event) {
-        if (event.getJDA().getSelfUser().getId().equals(event.getMember().getId())
-        && (event.getNewValue() == null || event.getChannelJoined() == null)){
-            playerManager.getMusicManager(event.getGuild()).scheduler.skipAll();
-        }
     }
 }
