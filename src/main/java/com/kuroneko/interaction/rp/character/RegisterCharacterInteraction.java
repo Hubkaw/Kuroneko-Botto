@@ -2,7 +2,9 @@ package com.kuroneko.interaction.rp.character;
 
 import com.kuroneko.database.entity.ChannelEntity;
 import com.kuroneko.database.entity.PlayerCharacterEntity;
+import com.kuroneko.database.mapper.ChannelMapper;
 import com.kuroneko.database.mapper.StatMapper;
+import com.kuroneko.database.repository.ChannelRepository;
 import com.kuroneko.database.repository.PlayerCharacterRepository;
 import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.Ability;
@@ -27,6 +29,7 @@ import java.util.Map;
 @Component
 public class RegisterCharacterInteraction implements SlashInteraction {
 
+    private final ChannelRepository channelRepository;
     private PlayerCharacterRepository playerCharacterRepository;
 
 
@@ -44,7 +47,10 @@ public class RegisterCharacterInteraction implements SlashInteraction {
             return;
         }
 
-        ChannelEntity channelEntity = createChannel(event);
+        ChannelEntity channelEntity = channelRepository.findById(event.getChannel().getId()).orElse(null);
+        if (channelEntity == null) {
+            channelEntity = channelRepository.save(ChannelMapper.map(event.getGuildChannel()));
+        }
 
         if (playerCharacterRepository.existsById(new PlayerCharacterEntity.Pk(event.getUser().getId(), channelEntity.getChannelId()))) {
             MessageEmbed embed = new KuronekoEmbed()
@@ -91,14 +97,6 @@ public class RegisterCharacterInteraction implements SlashInteraction {
             abilityIntegerMap.put(a, value);
         });
         return abilityIntegerMap;
-    }
-
-    private ChannelEntity createChannel(SlashCommandInteractionEvent scie) {
-        ChannelEntity newChannelEntity = new ChannelEntity();
-        newChannelEntity.setChannelId(scie.getChannel().getId());
-        newChannelEntity.setGuildId(scie.getGuild().getIdLong());
-        newChannelEntity.setChannelName(scie.getChannel().getName());
-        return newChannelEntity;
     }
 
     private PlayerCharacterEntity createCharacter(String userId, String name, ChannelEntity channel, Map<Ability, Integer> stats) {

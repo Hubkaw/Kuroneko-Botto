@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,6 +27,18 @@ public class ChannelEntity {
     @Column
     private Long guildId;
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "channel")
     private Set<PlayerCharacterEntity> characters = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.ALL},
+            fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "registered_in_channels",
+            joinColumns = {@JoinColumn(name = "channelId")},
+            inverseJoinColumns = {@JoinColumn(name = "puuid")})
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private List<SummonerEntity> summoners = new ArrayList<>();
 }
