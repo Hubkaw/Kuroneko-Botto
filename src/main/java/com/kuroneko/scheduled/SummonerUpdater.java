@@ -34,9 +34,8 @@ public class SummonerUpdater {
     private RankService rankService;
     private ChampionMasteryService championMasteryService;
 
-    @Scheduled(cron = "*/20 * * * * *")
-    public void updateEvery10Minutes() {
-        System.out.println("siema");
+    @Scheduled(cron = "0 */5 * * * *")
+    public void updateEvery5Minutes() {
         update();
     }
 
