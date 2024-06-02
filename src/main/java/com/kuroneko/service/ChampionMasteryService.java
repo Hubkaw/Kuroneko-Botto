@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import no.stelar7.api.r4j.pojo.lol.championmastery.ChampionMastery;
 import no.stelar7.api.r4j.pojo.lol.summoner.Summoner;
 import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,7 +31,9 @@ public class ChampionMasteryService {
 
     public SummonerEntity createChampionMasteryForKnownSummoner(Summoner summoner) {
         SummonerEntity summonerEntity = summonerRepository.findById(summoner.getPUUID()).orElse(null);
-        if (summonerEntity == null) {return null;}
+        if (summonerEntity == null) {
+            return null;
+        }
 
         List<ChampionMasteryEntity> cmEntities = summoner.getChampionMasteries().stream()
                 .map(c -> {
@@ -56,29 +59,25 @@ public class ChampionMasteryService {
             ChampionMasteryEntity championMasteryEntity = masteriesEntities.stream().filter(cm -> cm.getChampion().getId() == apiCM.getChampionId()).findFirst().orElse(null);
             if (championMasteryEntity == null) {
                 ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                if (championEntity == null) { return;}
+                if (championEntity == null) {
+                    return;
+                }
                 ChampionMasteryEntity newCME = ChampionMasteryMapper.map(apiCM, championEntity, summonerEntity);
                 cmRepository.save(newCME);
                 return;
             }
             boolean hasChanged = false;
-            if (apiCM.getChampionPoints() != championMasteryEntity.getPoints()){
-                if (apiCM.getChampionPoints()/100000 > championMasteryEntity.getPoints()/100000){
-                    if (apiCM.getChampionPoints()/1000000 > championMasteryEntity.getPoints()/1000000){
-                        ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                        if (championEntity != null)
-                            result.add(premadeMessages.championMastery1m(apiCM, summonerEntity.getRiotId(), championEntity.getName()));
-                    } else {
-                        ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                        if (championEntity != null)
-                            result.add(premadeMessages.championMastery100k(apiCM, summonerEntity.getRiotId(), championEntity.getName()));
-                    }
+            if (apiCM.getChampionPoints() != championMasteryEntity.getPoints()) {
+                if (apiCM.getChampionPoints() / 1000000 > championMasteryEntity.getPoints() / 1000000) {
+                    ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
+                    if (championEntity != null)
+                        result.add(premadeMessages.championMastery1m(apiCM, summonerEntity.getRiotId(), championEntity.getName()));
                 }
                 championMasteryEntity.setPoints(apiCM.getChampionPoints());
                 hasChanged = true;
             }
             if (apiCM.getChampionLevel() != championMasteryEntity.getLevel()) {
-                if (apiCM.getChampionLevel() == 7){
+                if (apiCM.getChampionLevel() == 7) {
                     ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
                     if (championEntity != null)
                         result.add(premadeMessages.championLevel7(apiCM, summonerEntity.getRiotId(), championEntity.getName()));
@@ -86,7 +85,7 @@ public class ChampionMasteryService {
                 championMasteryEntity.setLevel(apiCM.getChampionLevel());
                 hasChanged = true;
             }
-            if (hasChanged){
+            if (hasChanged) {
                 cmRepository.saveAndFlush(championMasteryEntity);
             }
         });
