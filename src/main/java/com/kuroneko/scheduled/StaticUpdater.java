@@ -20,7 +20,7 @@ public class StaticUpdater {
     private ChampionRepository championRepository;
 
     @Scheduled(cron = "0 0 6 * * *")
-    public void updateChampionsEveryDayAt4() {
+    public void updateChampionsEveryDayAt6() {
         updateChampions();
     }
 
