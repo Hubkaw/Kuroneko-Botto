@@ -51,7 +51,7 @@ public class SummonerUpdater {
 
             outputs.addAll(summonerService.checkSummonerInfo(s, summoner));
             outputs.addAll(rankService.checkRanks(summoner, s));
-            outputs.addAll(championMasteryService.checkChampionMasteries(summoner, s));
+//            outputs.addAll(championMasteryService.checkChampionMasteries(summoner, s));
 
             sendMessagesToChannels(s, outputs);
         });
