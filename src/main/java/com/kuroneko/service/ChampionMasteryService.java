@@ -77,10 +77,10 @@ public class ChampionMasteryService {
                 hasChanged = true;
             }
             if (apiCM.getChampionLevel() != championMasteryEntity.getLevel()) {
-                if (apiCM.getChampionLevel() == 7) {
+                if (apiCM.getChampionLevel() / 10 > championMasteryEntity.getLevel() / 10) {
                     ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
                     if (championEntity != null)
-                        result.add(premadeMessages.championLevel7(apiCM, summonerEntity.getRiotId(), championEntity.getName()));
+                        result.add(premadeMessages.championLevelUpdateBy10(apiCM, summonerEntity.getRiotId(), championEntity.getName(),apiCM.getChampionLevel()));
                 }
                 championMasteryEntity.setLevel(apiCM.getChampionLevel());
                 hasChanged = true;

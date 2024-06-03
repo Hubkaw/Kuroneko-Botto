@@ -130,10 +130,11 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed championLevel7(ChampionMastery championMastery, String summonerName, String championName){
+    public MessageEmbed championLevelUpdateBy10(ChampionMastery championMastery, String summonerName, String championName, int level){
         EmbedBuilder embedBuilder = createBuilder();
 
-        String desc = "%s has crafted Mastery Level 7 on %s. Don't think that makes you a good player Senpai.. ".formatted(
+        String desc = "%s has reached mastery level %s on %s. Don't think that makes you a good player Senpai.. ".formatted(
+                level,
                 summonerName,
                 championName);
 
