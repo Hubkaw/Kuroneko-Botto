@@ -1,15 +1,10 @@
 package com.kuroneko.interaction;
 
-import com.kuroneko.lavaplayer.PlayerManager;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -36,7 +31,7 @@ public class SlashInteractionManager extends ListenerAdapter {
     public void onCommandAutoCompleteInteraction(CommandAutoCompleteInteractionEvent event) {
         SlashInteraction slashInteraction = interactionMap.get(event.getName());
 
-        if (slashInteraction != null){
+        if (slashInteraction != null) {
             slashInteraction.autoComplete(event);
         }
     }
