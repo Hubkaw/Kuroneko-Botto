@@ -42,13 +42,13 @@ public class NowPlaying extends MusicInteraction implements SlashInteraction {
                 complete.deleteOriginal().queueAfter(30, TimeUnit.SECONDS);
             } else {
                 MessageEmbed build = new KuronekoEmbed().setTitle("I'm not playing anything")
-                        .setDescription("You can request a song by typing ';play <name/link>'").build();
+                        .setDescription("You can request a song with /play interaction").build();
                 InteractionHook complete = event.replyEmbeds(build).complete();
                 complete.deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
             }
         } else {
             MessageEmbed build = new KuronekoEmbed().setTitle("I'm not playing anything")
-                    .setDescription("I'm not even connected to a coive channel nerd").build();
+                    .setDescription("I'm not even connected to a voice channel nerd").build();
             InteractionHook complete = event.replyEmbeds(build).complete();
             complete.deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
         }
