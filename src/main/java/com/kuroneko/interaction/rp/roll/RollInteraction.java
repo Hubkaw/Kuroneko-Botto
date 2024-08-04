@@ -10,18 +10,15 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 abstract class RollInteraction implements SlashInteraction {
 
-    private final String[] words = new String[]{"100", "10", "d6", "4d6", "12d4", "100d100"};
+    private final String[] words = new String[]{"100", "20", "10", "d6", "12d4", "100d100"};
 
     private final Pattern dicePattern = Pattern.compile("([0-9]*)[d|k]([0-9]+)");
 
@@ -38,16 +35,19 @@ abstract class RollInteraction implements SlashInteraction {
             event.replyChoices(Arrays.stream(words).map(word -> new Command.Choice(word, word)).toList()).queue();
             return;
         }
-        if (value.matches("([0-9]+)?[d|k|D|K]")) {
-            event.replyChoices(List.of(new Command.Choice(value + "100", value + "100"), new Command.Choice(value + "10", value + "10"), new Command.Choice(value + "6", value + "6"))).queue();
+        if (value.matches("([0-9]+)?[d|k|D|K]")){
+            event.replyChoices(
+                    new Command.Choice(value + "100", value + "100"),
+                    new Command.Choice(value + "20", value + "20"),
+                    new Command.Choice(value + "10", value + "10"),
+                    new Command.Choice(value + "8", value + "8"),
+                    new Command.Choice(value + "6", value + "6"),
+                    new Command.Choice(value + "4", value + "4"))
+                    .queue();
             return;
         }
-        if (value.matches("[1-9]+")) {
-            event.replyChoices(new Command.Choice(value + "00", value + "00"), new Command.Choice(value + "0", value + "0"), new Command.Choice(value, value)).queue();
-            return;
-        }
-        if (value.matches("([0-9]+[d|k|D|K])?[1-9][0-9]+")) {
-            event.replyChoices(new Command.Choice(value, value)).queue();
+        if (value.matches("([0-9]+)?([d|k|D|K])?[0-9]+")){
+            event.replyChoices(new Command.Choice(value, value), new Command.Choice(value + "0", value + "0"), new Command.Choice(value + "00", value + "00")).queue();
             return;
         }
         event.replyChoices(Arrays.stream(words).map(word -> new Command.Choice(word, word)).toList()).queue();
