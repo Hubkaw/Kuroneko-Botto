@@ -10,9 +10,12 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,21 +35,22 @@ abstract class RollInteraction implements SlashInteraction {
     public void autoComplete(CommandAutoCompleteInteractionEvent event) {
         String value = event.getFocusedOption().getValue();
         if (value.isBlank()) {
-            event.replyChoices(Arrays.stream(words).map(word -> new Command.Choice(word, word)).toList()).queue();
+            event.replyChoices(createChoices("", words)).queue();
             return;
         }
-        if (value.matches("([0-9]+)?[d|k|D|K]")){
+        if (value.matches("([0-9]+)?([d|k])?1")) {
             event.replyChoices(
-                    new Command.Choice(value + "100", value + "100"),
-                    new Command.Choice(value + "20", value + "20"),
-                    new Command.Choice(value + "10", value + "10"),
-                    new Command.Choice(value + "8", value + "8"),
-                    new Command.Choice(value + "6", value + "6"),
-                    new Command.Choice(value + "4", value + "4"))
-                    .queue();
+                    createChoices(value, "00", "2", "0")
+            ).queue();
             return;
         }
-        if (value.matches("([0-9]+)?([d|k|D|K])?[0-9]+")){
+        if (value.matches("([0-9]+)?[d|k|D|K]")) {
+            event.replyChoices(
+                    createChoices(value, "100", "20", "10", "8", "6", "4")
+            ).queue();
+            return;
+        }
+        if (value.matches("([0-9]+)?([d|k|D|K])?[0-9]+")) {
             event.replyChoices(new Command.Choice(value, value), new Command.Choice(value + "0", value + "0"), new Command.Choice(value + "00", value + "00")).queue();
             return;
         }
@@ -129,4 +133,16 @@ abstract class RollInteraction implements SlashInteraction {
 
     abstract int roll(int cap);
 
+
+    private List<Command.Choice> createChoices(String value, String... mods) {
+        ArrayList<Command.Choice> output = new ArrayList<>();
+        for (int i = 0; i < mods.length; i++) {
+            output.add(modifyChoice(value, mods[i]));
+        }
+        return output;
+    }
+
+    private Command.Choice modifyChoice(String value, String mod) {
+        return new Command.Choice(value + mod, value + mod);
+    }
 }
