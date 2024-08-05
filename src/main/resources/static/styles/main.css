@@ -1,0 +1,71 @@
+body {
+    background-color: #CADCFC;
+    font-family: sans-serif ;
+}
+#wrap {
+    width: 80%;
+    max-width: 1080px;
+    border: 8px solid #00246B;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5%;
+    background-color: #00246B;
+    color: #CADCFC;
+    font-size: 20px;
+    border-radius: 15px;
+}
+#drinking-gif {
+    width: 400px;
+    height: 400px;
+}
+#data {
+    flex: 1;
+    flex-direction: column;
+    padding-left: 2%;
+    padding-right: 2%;
+    width: 100%;
+    height: 100%;
+}
+#gif {
+    width: 100%;
+    height: 100%;
+}
+h2 {
+    font-size: 32px;
+    text-align: center;
+    color: azure;
+}
+.button-img {
+    vertical-align: middle;
+    width: 32px;
+    height: 32px;
+    margin-right: 5px;
+}
+a {
+    text-decoration: none;
+    font-weight: bold;
+    color: azure;
+}
+.kuroneko-button {
+    width: 110px;
+    background-color: azure;
+    border: 4px solid azure;
+    color: #00246B;
+    font-weight: bold;
+    padding: 4px;
+    border-radius: 15px;
+    margin-left: 5px;
+}
+
+.kuroneko-button:hover {
+    background-color: #CADCFC;
+    border-color: #CADCFC;
+    color: #00246B;
+}
+
+footer {
+    align-self: flex-end;
+    text-align: right;
+    margin: auto 0 0 auto;
+}

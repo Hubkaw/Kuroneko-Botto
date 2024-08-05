@@ -1,0 +1,38 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Kuroneko</title>
+    <link th:href="@{/styles/main.css}" rel="stylesheet">
+</head>
+<body>
+<div id="wrap">
+    <div id="drinking-gif">
+        <img src="https://c.tenor.com/FOjLRgaGFUoAAAAC/tenor.gif" alt="Kuroneko" id="gif"/>
+    </div>
+    <div id="data">
+        <h2>
+            Hi, Kuroneko here.
+        </h2>
+        <p>
+            I am a discord bot developed by Hubkaw.<br>
+            I play music, roll dice, track League of Legends ranks and some other weird stuff, feel free to check it out.
+            You can invite me to your server with a button at the bottom of this page.<br><br><br>
+
+            Currently on <span th:text="${kuronekoServerAmount}"></span> servers.<br><br>
+        </p>
+        <footer>
+            <a th:href="${kuronekoInvite}">
+                <button class="kuroneko-button">
+                    <img src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6918e57475a843f59f_icon_clyde_black_RGB.svg"
+                         class="button-img" alt="discord-logo"> Invite
+                </button>
+            </a>
+            <a href="https://github.com/Hubkaw/Kuroneko-Botto">
+                <button class="kuroneko-button">
+                    <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" class="button-img" alt="Logo"> GitHub
+                </button>
+            </a>
+        </footer>
+    </div>
+</div>
+</body>
+</html>
