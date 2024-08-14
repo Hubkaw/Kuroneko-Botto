@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
+    @Getter
     private final BlockingQueue<AudioTrack> queue;
     private boolean isLooped;
 
@@ -88,7 +90,4 @@ public class TrackScheduler extends AudioEventAdapter {
         return isLooped;
     }
 
-    public BlockingQueue<AudioTrack> getQueue() {
-        return queue;
-    }
 }
