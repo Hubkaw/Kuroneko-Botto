@@ -1,6 +1,7 @@
 package com.kuroneko.interaction.rp.roll;
 
 import com.kuroneko.interaction.SlashInteraction;
+import com.kuroneko.misc.RNG;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
@@ -12,18 +13,17 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 
 import java.awt.*;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 abstract class RollInteraction implements SlashInteraction {
 
     private final String[] words = new String[]{"100", "20", "10", "d6", "12d4", "100d100"};
 
-    private final Pattern dicePattern = Pattern.compile("([0-9]*)[d|k]([0-9]+)");
 
 
     @Override
@@ -34,6 +34,10 @@ abstract class RollInteraction implements SlashInteraction {
     @Override
     public void autoComplete(CommandAutoCompleteInteractionEvent event) {
         String value = event.getFocusedOption().getValue();
+        if (value.contains(",") || value.contains(" ") || value.contains("+") || value.contains("?")) {
+            event.replyChoices(createChoices(value, "")).queue();
+            return;
+        }
         if (value.isBlank()) {
             event.replyChoices(createChoices("", words)).queue();
             return;
@@ -66,56 +70,39 @@ abstract class RollInteraction implements SlashInteraction {
                     sendMessage(event, rollError());
                     return;
                 }
-                Matcher matcher = dicePattern.matcher(dices.getAsString());
-                if (matcher.matches()) {
+                String dicesAsString = dices.getAsString();
+                String[] split = dicesAsString.split("[+?,\s]\s*");
+                StringBuilder sb = new StringBuilder();
 
-                    int die = matcher.group(1).isBlank() ? 1 : Integer.parseInt(matcher.group(1));
-                    int size = Integer.parseInt(matcher.group(2));
-                    MessageEmbed embed = rollMessage(die, size, event.getMember().getEffectiveName());
-                    sendMessage(event, embed);
+                List<Dices> dicesList = Stream.of(split).map(Dices::new).filter(Dices::isValid).toList();
+                if (dicesList.isEmpty()) {
+                    sendMessage(event, rollError());
                     return;
                 }
-                int size = Integer.parseInt(dices.getAsString());
-                MessageEmbed embed = rollMessage(1, size, event.getMember().getEffectiveName());
-                sendMessage(event, embed);
+
+                dicesList.forEach(d -> sb.append(d.getResultAsString(getRNG())));
+
+
+                if (dicesList.size() > 1) {
+                    AtomicInteger total = new AtomicInteger(0);
+                    dicesList.forEach(d -> d.getResults().forEach(total::addAndGet));
+                    sb.append("Total: ").append(total.get());
+                }
+
+                MessageEmbed build = new EmbedBuilder()
+                        .setTitle("Roll for " + event.getMember().getEffectiveName())
+                        .setDescription(sb.toString())
+                        .setColor(new Color(110, 0, 127))
+                        .build();
+
+                sendMessage(event, build);
             } catch (Exception e) {
+                e.printStackTrace();
                 sendMessage(event, rollError());
             }
         }
     }
 
-    private MessageEmbed rollMessage(int diceAmount, int diceSize, String author) {
-        if (diceSize > 1000 || diceAmount > 100) {
-            return rollError();
-        }
-
-        int[] rolls = new int[diceAmount];
-        for (int i = 0; i < diceAmount; i++) {
-            rolls[i] = roll(diceSize) + 1;
-        }
-
-        StringBuilder sb = new StringBuilder("[ ");
-
-        int sum = 0;
-
-        for (int i = 0; i < diceAmount; i++) {
-            if (i != 0) {
-                sb.append(" -");
-            }
-            sb.append(" ").append(rolls[i]).append(" ");
-            sum += rolls[i];
-        }
-        sb.append("] ");
-        if (diceAmount > 1) {
-            String avg = new DecimalFormat("#.###").format(((double) sum) / ((double) diceAmount));
-            sb.append("- [SUM: ").append(sum).append("] - [AVG: ").append(avg).append("] ");
-        }
-        return new EmbedBuilder()
-                .setTitle("Roll " + diceAmount + "d" + diceSize + " for " + author)
-                .setDescription(sb.toString())
-                .setColor(new Color(110, 0, 127))
-                .build();
-    }
 
     private MessageEmbed rollError() {
         return new EmbedBuilder()
@@ -131,7 +118,7 @@ abstract class RollInteraction implements SlashInteraction {
                 .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true);
     }
 
-    abstract int roll(int cap);
+    abstract RNG getRNG();
 
 
     private List<Command.Choice> createChoices(String value, String... mods) {

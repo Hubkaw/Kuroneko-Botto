@@ -19,8 +19,8 @@ public class PublicRollInteraction extends RollInteraction {
     }
 
     @Override
-    int roll(int cap) {
-        return rng.rollInt(cap);
+    RNG getRNG() {
+        return rng;
     }
 
     @Override
