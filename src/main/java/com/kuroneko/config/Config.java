@@ -10,4 +10,5 @@ public class Config {
     private Long olekID;
     private String dbUser;
     private String dbPassword;
+    private String youtubeToken;
 }
