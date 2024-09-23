@@ -8,28 +8,27 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
-
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 abstract class RollInteraction implements SlashInteraction {
 
     private final String[] words = new String[]{"100", "20", "10", "d6", "12d4", "100d100"};
 
-
-
     @Override
     public abstract String getName();
 
     abstract void sendMessage(SlashCommandInteractionEvent event, MessageEmbed embed);
+
+    @Override
+    public abstract CommandData getCommand();
+
+    abstract RNG getRNG();
 
     @Override
     public void autoComplete(CommandAutoCompleteInteractionEvent event) {
@@ -111,15 +110,6 @@ abstract class RollInteraction implements SlashInteraction {
                 .setColor(new Color(110, 0, 127))
                 .build();
     }
-
-    @Override
-    public CommandData getCommand() {
-        return Commands.slash(getName(), "Roll dice")
-                .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true);
-    }
-
-    abstract RNG getRNG();
-
 
     private List<Command.Choice> createChoices(String value, String... mods) {
         ArrayList<Command.Choice> output = new ArrayList<>();

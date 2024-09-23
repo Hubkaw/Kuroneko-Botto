@@ -10,7 +10,8 @@ public class OlekNieKumamResponse implements CustomMessageResponse {
 
     @Override
     public boolean isRelevant(MessageReceivedEvent event) {
-        return event.getMember().getIdLong() == ConfigLoader.getConfig().getOlekID()
+        return event.getMember() != null
+                && event.getMember().getIdLong() == ConfigLoader.getConfig().getOlekID()
                 && event.getMessage().getContentRaw().toLowerCase().contains("nie kumam");
     }
 
