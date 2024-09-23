@@ -16,7 +16,7 @@ import java.text.DecimalFormat;
 @Component
 public class LeaguePremakeMessages {
 
-    private static DecimalFormat masteryFormat = new DecimalFormat("###,###,###");
+    private static final DecimalFormat masteryFormat = new DecimalFormat("###,###,###");
 
     private DDragonService dDragonService;
 

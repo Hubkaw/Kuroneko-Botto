@@ -24,7 +24,7 @@ import java.util.Optional;
 @Transactional
 public class RankService {
 
-    private static List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5);
+    private static final List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5);
 
     private SummonerRepository summonerRepository;
     private RankRepository rankRepository;
