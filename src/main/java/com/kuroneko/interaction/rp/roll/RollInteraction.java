@@ -104,6 +104,8 @@ abstract class RollInteraction implements SlashInteraction {
                 MemberChannelEntity memberChannel = getMemberChannel(event);
                 if (memberChannel != null && !memberChannel.getRollImageLink().isBlank()) {
                     builder.setThumbnail(memberChannel.getRollImageLink());
+                } else {
+                    builder.setThumbnail(event.getUser().getAvatarUrl());
                 }
 
                 sendMessage(event, builder.build());
