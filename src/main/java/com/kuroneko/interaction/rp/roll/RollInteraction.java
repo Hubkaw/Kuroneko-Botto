@@ -1,5 +1,7 @@
 package com.kuroneko.interaction.rp.roll;
 
+import com.kuroneko.database.entity.MemberChannelEntity;
+import com.kuroneko.database.repository.MemberChannelRepository;
 import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.RNG;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -8,7 +10,10 @@ import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInterac
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.Command;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +31,10 @@ abstract class RollInteraction implements SlashInteraction {
     abstract void sendMessage(SlashCommandInteractionEvent event, MessageEmbed embed);
 
     @Override
-    public abstract CommandData getCommand();
+    public CommandData getCommand() {
+        return Commands.slash(getName(), "Roll dice")
+                .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true);
+    }
 
     abstract RNG getRNG();
 
@@ -88,13 +96,17 @@ abstract class RollInteraction implements SlashInteraction {
                     sb.append("Total: ").append(total.get());
                 }
 
-                MessageEmbed build = new EmbedBuilder()
+                EmbedBuilder builder = new EmbedBuilder()
                         .setTitle("Roll for " + event.getMember().getEffectiveName())
                         .setDescription(sb.toString())
-                        .setColor(new Color(110, 0, 127))
-                        .build();
+                        .setColor(new Color(110, 0, 127));
 
-                sendMessage(event, build);
+                MemberChannelEntity memberChannel = getMemberChannel(event);
+                if (memberChannel != null && !memberChannel.getRollImageLink().isBlank()) {
+                    builder.setThumbnail(memberChannel.getRollImageLink());
+                }
+
+                sendMessage(event, builder.build());
             } catch (Exception e) {
                 e.printStackTrace();
                 sendMessage(event, rollError());
@@ -122,4 +134,6 @@ abstract class RollInteraction implements SlashInteraction {
     private Command.Choice modifyChoice(String value, String mod) {
         return new Command.Choice(value + mod, value + mod);
     }
+
+    protected abstract MemberChannelEntity getMemberChannel(SlashCommandInteractionEvent event);
 }

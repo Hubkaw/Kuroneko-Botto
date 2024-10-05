@@ -1,5 +1,7 @@
 package com.kuroneko.interaction.rp.roll;
 
+import com.kuroneko.database.entity.MemberChannelEntity;
+import com.kuroneko.database.repository.MemberChannelRepository;
 import com.kuroneko.misc.RNG;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -8,6 +10,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class StealthRollInteraction extends RollInteraction{
 
     private RNG rng;
+    private MemberChannelRepository mcRepository;
     private final String GM_OPTION = "game-master";
 
     @Override
@@ -32,10 +36,13 @@ public class StealthRollInteraction extends RollInteraction{
     }
 
     @Override
+    protected MemberChannelEntity getMemberChannel(SlashCommandInteractionEvent event) {
+        return mcRepository.findById(new MemberChannelEntity.Pk(event.getMember().getIdLong(), event.getChannel().getId())).orElse(null);
+    }
+
+    @Override
     public CommandData getCommand() {
-        return Commands.slash(getName(), "Roll dice")
-                .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true)
-                .addOption(OptionType.USER, GM_OPTION, "e.g. @Kuroneko", false, false);
+        return ((SlashCommandData) super.getCommand()).addOption(OptionType.USER, GM_OPTION, "e.g. @Kuroneko", false, false);
     }
 
     @Override

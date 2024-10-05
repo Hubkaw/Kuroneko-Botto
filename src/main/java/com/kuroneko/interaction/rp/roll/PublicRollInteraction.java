@@ -1,6 +1,8 @@
 package com.kuroneko.interaction.rp.roll;
 
 
+import com.kuroneko.database.entity.MemberChannelEntity;
+import com.kuroneko.database.repository.MemberChannelRepository;
 import com.kuroneko.misc.RNG;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,16 +17,11 @@ import org.springframework.stereotype.Component;
 public class PublicRollInteraction extends RollInteraction {
 
     private RNG rng;
+    private MemberChannelRepository mcRepository;
 
     @Override
     void sendMessage(SlashCommandInteractionEvent event, MessageEmbed embed) {
         event.replyEmbeds(embed).setEphemeral(false).queue();
-    }
-
-    @Override
-    public CommandData getCommand() {
-        return Commands.slash(getName(), "Roll dice")
-                .addOption(OptionType.STRING, "rolls", "e.g. d100, 4d6, 2k10", true, true);
     }
 
     @Override
@@ -35,5 +32,10 @@ public class PublicRollInteraction extends RollInteraction {
     @Override
     public String getName() {
         return "roll";
+    }
+
+    @Override
+    protected MemberChannelEntity getMemberChannel(SlashCommandInteractionEvent event) {
+        return mcRepository.findById(new MemberChannelEntity.Pk(event.getMember().getIdLong(), event.getChannel().getId())).orElse(null);
     }
 }
