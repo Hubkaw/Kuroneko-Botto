@@ -36,6 +36,6 @@ public class SummonerEntity {
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    @OneToMany(mappedBy = "summoner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "summoner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<RankEntity> ranks = new HashSet<>();
 }
