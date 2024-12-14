@@ -3,6 +3,7 @@ package com.kuroneko.scheduled;
 import com.kuroneko.database.entity.ChampionEntity;
 import com.kuroneko.database.mapper.ChampionMapper;
 import com.kuroneko.database.repository.ChampionRepository;
+import com.kuroneko.service.DnDRulebookService;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import no.stelar7.api.r4j.impl.R4J;
@@ -18,6 +19,7 @@ public class StaticUpdater {
 
     private R4J riotApi;
     private ChampionRepository championRepository;
+    private DnDRulebookService rulebookService;
 
     @Scheduled(cron = "0 0 6 * * *")
     public void updateChampionsEveryDayAt6() {
@@ -27,6 +29,7 @@ public class StaticUpdater {
     @PostConstruct
     public void updateChampionsAtStartup() {
         updateChampions();
+        rulebookService.initializeSpells();
     }
 
     private void updateChampions(){
