@@ -1,5 +1,6 @@
 package com.kuroneko.config;
 
+import com.kuroneko.interaction.ButtonInteractionManager;
 import com.kuroneko.interaction.SlashInteractionManager;
 import com.kuroneko.message.CustomMessageManager;
 import com.kuroneko.misc.VoiceChannelUpdateHandler;
@@ -18,13 +19,15 @@ public class Bot {
 
     public Bot(SlashInteractionManager sim,
                VoiceChannelUpdateHandler vcuh,
-               CustomMessageManager cmm) {
+               CustomMessageManager cmm,
+               ButtonInteractionManager bim) {
         JDA = JDABuilder.createDefault(ConfigLoader.getConfig().getDiscordToken())
                 .enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                 .enableCache(CacheFlag.EMOJI, CacheFlag.VOICE_STATE)
                 .addEventListeners(sim)
                 .addEventListeners(vcuh)
                 .addEventListeners(cmm)
+                .addEventListeners(bim)
                 .setActivity(Activity.listening("Ride on Time"))
                 .build();
     }
