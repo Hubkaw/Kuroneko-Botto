@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 public class Participant implements Comparable<Participant> {
 
 
-    private static final Pattern pattern = Pattern.compile("^(([(0-9])+\\s?[xX])?([\\w ]+)(\\s?[+-]\\s?[0-9])?$", Pattern.UNICODE_CHARACTER_CLASS);
+    private static final Pattern pattern = Pattern.compile("^(([(0-9]+)\\s?[xX])?([\\w ]+)(\\s?[+-]\\s?[0-9]+)?$", Pattern.UNICODE_CHARACTER_CLASS);
 
     @Getter
     private String name;
