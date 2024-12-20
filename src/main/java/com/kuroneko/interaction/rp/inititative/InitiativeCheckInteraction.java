@@ -100,7 +100,7 @@ public class InitiativeCheckInteraction implements SlashInteraction {
     @Override
     public CommandData getCommand() {
         return Commands.slash(getName(), "Start a initiative check")
-                .addOption(OptionType.STRING, CHARACTERS_OPTION, "Add characters to initiative check", true, false);
+                .addOption(OptionType.STRING, CHARACTERS_OPTION, "Add characters like: Gimli +2, 2x Elder Red Dragon, Jeff", true, false);
     }
 
     @Override
