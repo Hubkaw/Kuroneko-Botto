@@ -100,14 +100,18 @@ public class UnregisterSummonerInteraction implements SlashInteraction {
         OptionMapping option = event.getOption("riot-id");
         if (option == null || option.getAsString().isBlank()){
             List<Command.Choice> choices = new ArrayList<>();
-            channelEntity.getSummoners().forEach(summoner -> choices.add(new Command.Choice(summoner.getRiotId(), summoner.getRiotId())));
+            channelEntity.getSummoners().stream()
+                    .limit(25)
+                    .forEach(summoner ->
+                            choices.add(new Command.Choice(summoner.getRiotId(), summoner.getRiotId())));
             event.replyChoices(choices).queue();
             return;
         }
 
         List<Command.Choice> choices = new ArrayList<>();
         channelEntity.getSummoners().stream()
-                .filter(s -> s.getRiotId().startsWith(option.getAsString()))
+                .filter(s -> s.getRiotId().toLowerCase().startsWith(option.getAsString().toLowerCase()))
+                .limit(25)
                 .forEach(summoner -> choices.add(new Command.Choice(summoner.getRiotId(), summoner.getRiotId())));
         event.replyChoices(choices).queue();
     }
