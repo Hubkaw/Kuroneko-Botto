@@ -59,12 +59,17 @@
         <dependency>
             <groupId>com.github.stelar7</groupId>
             <artifactId>R4J</artifactId>
-            <version>2.5.2</version>
+            <version>2.5.6</version>
         </dependency>
         <dependency>
             <groupId>dev.lavalink.youtube</groupId>
             <artifactId>v2</artifactId>
             <version>1.11.1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
 
@@ -73,6 +78,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.1.12.RELEASE</version> <!-- Możesz usunąć, jeśli używasz nowej wersji Spring Boot -->
                 <configuration>
                     <excludes>
                         <exclude>
@@ -81,11 +87,6 @@
                         </exclude>
                     </excludes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.1.12.RELEASE</version>
                 <executions>
                     <execution>
                         <goals>
@@ -96,6 +97,7 @@
             </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
             <id>spring-milestones</id>
