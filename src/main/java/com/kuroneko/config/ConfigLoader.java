@@ -36,7 +36,7 @@ public class ConfigLoader {
         config.setDbUser(ENV.get("DB_USER"));
         config.setDbPassword(ENV.get("DB_PASSWORD"));
         config.setDiscordToken(ENV.get("DISCORD_TOKEN"));
-        config.setRiotToken(ENV.get("ROIT_TOKEN"));
+        config.setRiotToken(ENV.get("RIOT_TOKEN"));
         config.setYoutubeToken(ENV.get("YOUTUBE_TOKEN"));
     }
 
