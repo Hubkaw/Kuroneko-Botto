@@ -12,10 +12,9 @@ public class ConfigLoader {
 
     private static Config config;
     private static Dotenv ENV;
-    ConfigLoader(Dotenv env) {
-        ENV = env;
-    }
+
     public static Config getConfig(){
+        ENV = EnvLoader.Env();
         if (config == null){
             checkAndLoadConfig();
         }

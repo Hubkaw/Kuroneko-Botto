@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 @Configuration
 public class EnvLoader {
 
-    @Bean
     public static Dotenv Env() {
         Path envPath = Paths.get(".env");
         if(Files.exists(envPath)) {
