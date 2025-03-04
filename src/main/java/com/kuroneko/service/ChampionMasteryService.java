@@ -50,45 +50,4 @@ public class ChampionMasteryService {
         summonerEntity.getMasteryPoints().addAll(masteryEntities);
         return summonerRepository.saveAndFlush(summonerEntity);
     }
-
-    public List<MessageEmbed> checkChampionMasteries(Summoner summoner, SummonerEntity summonerEntity) {
-        List<MessageEmbed> result = new ArrayList<>();
-        List<ChampionMasteryEntity> masteriesEntities = cmRepository.findAllBySummoner(summonerEntity);
-        List<ChampionMastery> championMasteries = summoner.getChampionMasteries();
-        championMasteries.forEach(apiCM -> {
-            ChampionMasteryEntity championMasteryEntity = masteriesEntities.stream().filter(cm -> cm.getChampion().getId() == apiCM.getChampionId()).findFirst().orElse(null);
-            if (championMasteryEntity == null) {
-                ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                if (championEntity == null) {
-                    return;
-                }
-                ChampionMasteryEntity newCME = ChampionMasteryMapper.map(apiCM, championEntity, summonerEntity);
-                cmRepository.save(newCME);
-                return;
-            }
-            boolean hasChanged = false;
-            if (apiCM.getChampionPoints() != championMasteryEntity.getPoints()) {
-                if (apiCM.getChampionPoints() / 1000000 > championMasteryEntity.getPoints() / 1000000) {
-                    ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                    if (championEntity != null)
-                        result.add(premadeMessages.championMastery1m(apiCM, summonerEntity.getRiotId(), championEntity.getName()));
-                }
-                championMasteryEntity.setPoints(apiCM.getChampionPoints());
-                hasChanged = true;
-            }
-            if (apiCM.getChampionLevel() != championMasteryEntity.getLevel()) {
-                if (apiCM.getChampionLevel() / 10 > championMasteryEntity.getLevel() / 10) {
-                    ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                    if (championEntity != null)
-                        result.add(premadeMessages.championLevelUpdateBy10(apiCM, summonerEntity.getRiotId(), championEntity.getName(),apiCM.getChampionLevel()));
-                }
-                championMasteryEntity.setLevel(apiCM.getChampionLevel());
-                hasChanged = true;
-            }
-            if (hasChanged) {
-                cmRepository.saveAndFlush(championMasteryEntity);
-            }
-        });
-        return result;
-    }
 }
