@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 @Component
 public class RegisterSummonerInteraction implements SlashInteraction {
 
-    private static final Pattern RIOT_ID_PATTERN = Pattern.compile("([0-9a-zA-Z ]{3,20})#([0-9a-zA-Z]{3,5})");
+    private static final Pattern RIOT_ID_PATTERN = Pattern.compile("([0-9a-zA-Z ]{3,20})#([0-9a-zA-Z ]{3,5})");
 
     private R4J riotApi;
     private SummonerService summonerService;
