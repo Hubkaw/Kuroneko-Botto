@@ -31,3 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/l4j8cache
