@@ -10,6 +10,6 @@ import org.springframework.stereotype.Component;
 public class RiotApi extends R4J {
     public RiotApi() {
         super(new APICredentials(ConfigLoader.getConfig().getRiotToken()));
-        DataCall.setCacheProvider(new FileSystemCacheProvider());
+
     }
 }
