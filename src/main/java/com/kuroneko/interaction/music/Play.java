@@ -69,15 +69,16 @@ public class Play extends MusicInteraction implements SlashInteraction {
 
     private String prepareLink(String link) {
         String toBeSearched = "";
-        if (!link.contains("?list") && !link.contains("&list")){
+        if (!link.contains("youtu.be/") && !link.contains("youtube.com/")){
             toBeSearched += "ytsearch: ";
         }
 
-        if (link.contains("youtu.be")){
+        if (link.contains("youtu.be/")){
             toBeSearched += link.replace("youtu.be/", "www.youtube.com/watch?v=");
         } else {
             toBeSearched += link;
         }
+
         return toBeSearched;
     }
 

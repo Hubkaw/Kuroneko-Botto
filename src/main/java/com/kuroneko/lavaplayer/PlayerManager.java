@@ -30,7 +30,6 @@ public class PlayerManager {
     public PlayerManager() {
         musicManagers = new HashMap<>();
         audioPlayerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(audioPlayerManager, com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager.class);
         YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(true, new Music(), new TvHtml5Embedded(), new Web());
         youtube.useOauth2(ConfigLoader.getConfig().getYoutubeToken(), true);
         audioPlayerManager.registerSourceManager(youtube);
