@@ -65,6 +65,10 @@ abstract class RollInteraction implements SlashInteraction {
             event.replyChoices(new Command.Choice(value, value), new Command.Choice(value + "0", value + "0"), new Command.Choice(value + "00", value + "00")).queue();
             return;
         }
+        if (value.matches("(([0-9]*)?[d|k|D|K])?([0-9]+)([*])?([+-])?([0-9]+)?")) {
+            event.replyChoices(new Command.Choice(value, value)).queue();
+            return;
+        }
         event.replyChoices(Arrays.stream(words).map(word -> new Command.Choice(word, word)).toList()).queue();
     }
 
@@ -78,7 +82,7 @@ abstract class RollInteraction implements SlashInteraction {
                     return;
                 }
                 String dicesAsString = dices.getAsString();
-                String[] split = dicesAsString.split("[+?,\s]\s*");
+                String[] split = dicesAsString.split("[?,\s]\s*");
                 StringBuilder sb = new StringBuilder();
 
                 List<Dices> dicesList = Stream.of(split).map(Dices::new).filter(Dices::isValid).toList();
