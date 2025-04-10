@@ -13,8 +13,11 @@ import java.util.TreeMap;
 @Component
 public class SlashInteractionManager extends ListenerAdapter {
     private final Map<String, SlashInteraction> interactionMap = new TreeMap<>();
+    private SlashInteractionLogger logger;
 
-    public SlashInteractionManager(Set<SlashInteraction> slashInteractions) {
+    public SlashInteractionManager(Set<SlashInteraction> slashInteractions,
+                                   SlashInteractionLogger logger) {
+        this.logger = logger;
         slashInteractions.forEach(mi -> interactionMap.put(mi.getName(), mi));
     }
 
@@ -23,6 +26,7 @@ public class SlashInteractionManager extends ListenerAdapter {
         SlashInteraction slashInteraction = interactionMap.get(event.getName());
 
         if (slashInteraction != null) {
+            logger.log(event);
             slashInteraction.execute(event);
         }
     }
