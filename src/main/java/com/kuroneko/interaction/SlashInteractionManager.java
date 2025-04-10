@@ -1,9 +1,11 @@
 package com.kuroneko.interaction;
 
+import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Set;
@@ -41,7 +43,13 @@ public class SlashInteractionManager extends ListenerAdapter {
     }
 
     @Override
-    public void onGuildReady(GuildReadyEvent event) {
+    public void onGuildReady(@NotNull GuildReadyEvent event) {
         interactionMap.forEach((k, i) -> event.getGuild().upsertCommand(i.getCommand()).queue());
     }
+
+    @Override
+    public void onGuildJoin(@NotNull GuildJoinEvent event) {
+        interactionMap.forEach((k, i) -> event.getGuild().upsertCommand(i.getCommand()).queue());
+    }
+
 }
