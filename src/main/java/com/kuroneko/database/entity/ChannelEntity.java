@@ -32,6 +32,11 @@ public class ChannelEntity {
     @OneToMany(mappedBy = "channel")
     private Set<PlayerCharacterEntity> characters = new HashSet<>();
 
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
+    private List<EventLogEntryEntity> log = new ArrayList<>();
+
     @ManyToMany(cascade = {CascadeType.ALL},
             fetch = FetchType.EAGER)
     @JoinTable(
