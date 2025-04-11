@@ -20,7 +20,6 @@ public class EventLogEntryEntity {
     @Id
     @GeneratedValue
     private Long id;
-    @Enumerated(EnumType.ORDINAL)
     private EventType eventType;
     private String eventName;
     private LocalDateTime timestamp;
@@ -35,6 +34,8 @@ public class EventLogEntryEntity {
 
     public enum EventType {
         SLASH_COMMAND,
-        LEAGUE_UPDATE
+        LEAGUE_UPDATE,
+        BUTTON_INTERACTION,
+        CUSTOM_MESSAGE_RESPONSE
     }
 }

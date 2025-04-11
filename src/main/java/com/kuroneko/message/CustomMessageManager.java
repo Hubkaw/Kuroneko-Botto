@@ -11,15 +11,21 @@ import java.util.Set;
 public class CustomMessageManager extends ListenerAdapter {
 
     private final List<CustomMessageResponse> customMessageResponses;
+    private CustomMessageLogger logger;
 
-    public CustomMessageManager(Set<CustomMessageResponse> customMessageResponses){
+    public CustomMessageManager(Set<CustomMessageResponse> customMessageResponses,
+                                CustomMessageLogger logger){
         this.customMessageResponses = new ArrayList<>(customMessageResponses);
+        this.logger = logger;
     }
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         customMessageResponses.stream()
                 .filter(m -> m.isRelevant(event))
-                .forEach(m -> m.execute(event));
+                .forEach(m -> {
+                    logger.log(event, m);
+                    m.execute(event);
+                });
     }
 }
