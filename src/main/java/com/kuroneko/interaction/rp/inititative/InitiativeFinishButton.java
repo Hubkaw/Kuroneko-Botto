@@ -1,14 +1,11 @@
 package com.kuroneko.interaction.rp.inititative;
 
 import com.kuroneko.interaction.ButtonInteraction;
-import com.kuroneko.misc.KuronekoEmbed;
 import lombok.Getter;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class InitiativeFinishButton implements ButtonInteraction {

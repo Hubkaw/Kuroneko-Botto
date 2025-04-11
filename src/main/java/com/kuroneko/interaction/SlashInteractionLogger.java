@@ -5,7 +5,7 @@ import com.kuroneko.database.entity.EventLogArgumentEntity;
 import com.kuroneko.database.entity.EventLogEntryEntity;
 import com.kuroneko.database.mapper.ChannelMapper;
 import com.kuroneko.database.repository.ChannelRepository;
-import com.kuroneko.database.repository.LoggedCommandRepository;
+import com.kuroneko.database.repository.EventLogEntryRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -18,7 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SlashInteractionLogger {
 
-    private LoggedCommandRepository logRepository;
+    private EventLogEntryRepository logRepository;
     private ChannelRepository channelRepository;
 
     @Async
