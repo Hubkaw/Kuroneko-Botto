@@ -58,11 +58,12 @@ public class LeaguePremakeMessages {
                         leagueEntry.getTierDivisionType().prettyName(),
                         leagueEntry.getLeaguePoints());
 
-        String footer = "%s wins - %s losses - (%s%% win rate)"
+        String footer = "%s wins - %s losses - (%s%% win rate) - %s"
                 .formatted(
                         leagueEntry.getWins(),
                         leagueEntry.getLosses(),
-                        calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()));
+                        calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()),
+                        summonerEntity.getRegion().name());
 
         embedBuilder.setFooter(footer);
         embedBuilder.setDescription(desc);
@@ -81,11 +82,12 @@ public class LeaguePremakeMessages {
                         leagueEntry.getTierDivisionType().prettyName(),
                         leagueEntry.getLeaguePoints());
 
-        String footer = "%s wins - %s losses - (%s%% win rate)"
+        String footer = "%s wins - %s losses - (%s%% win rate) - %s"
                 .formatted(
                         leagueEntry.getWins(),
                         leagueEntry.getLosses(),
-                        calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()));
+                        calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()),
+                        summonerEntity.getRegion().name());
 
         embedBuilder.setFooter(footer);
         embedBuilder.setDescription(desc);
