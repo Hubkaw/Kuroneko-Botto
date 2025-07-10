@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 @Component
 public class RegisterSummonerInteraction implements SlashInteraction {
 
-    private static final Pattern RIOT_ID_PATTERN = Pattern.compile("([0-9a-zA-Z ]{3,20})#([0-9a-zA-Z ]{3,5})");
+    //private static final Pattern RIOT_ID_PATTERN = Pattern.compile("([0-9a-zA-Z ]{3,20})#([0-9a-zA-Z ]{3,5})");
 
     private R4J riotApi;
     private SummonerService summonerService;
@@ -55,13 +55,7 @@ public class RegisterSummonerInteraction implements SlashInteraction {
             return;
         }
         String name = event.getOption("name").getAsString();
-        Matcher matcher = RIOT_ID_PATTERN.matcher(name);
-        if (!matcher.matches()) {
-            MessageEmbed invalidRiotId = new KuronekoEmbed().setTitle("Invalid Riot ID").setDescription("You have to provide a valid Riot ID").build();
-            Message complete = deferred.sendMessageEmbeds(invalidRiotId).setEphemeral(false).complete();
-            complete.delete().queueAfter(15, TimeUnit.SECONDS);
-            return;
-        }
+
         LeagueShard region;
         if (event.getOption("region") != null) {
             LeagueShard providedRegion = LeagueShard.fromString(event.getOption("region").getAsString()).orElse(null);
@@ -69,8 +63,9 @@ public class RegisterSummonerInteraction implements SlashInteraction {
         } else {
             region = LeagueShard.EUN1;
         }
-
-        RiotAccount account = riotApi.getAccountAPI().getAccountByTag(RegionShard.EUROPE, matcher.group(1), matcher.group(2));
+        String riotName = name.split("#")[0];
+        String riotTag = name.split("#")[1];
+        RiotAccount account = riotApi.getAccountAPI().getAccountByTag(RegionShard.EUROPE, riotName,riotTag);
         if (account == null) {
             MessageEmbed invalidRiotId = new KuronekoEmbed().setTitle("Invalid Riot ID").setDescription("There is no %s on %s".formatted(name, region.prettyName())).build();
             Message complete = deferred.sendMessageEmbeds(invalidRiotId).setEphemeral(false).complete();
