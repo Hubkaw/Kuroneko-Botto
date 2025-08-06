@@ -51,10 +51,6 @@ public class SummonerService {
             hasChanged = true;
         }
 
-        if (!summoner.getAccountId().equals(summonerEntity.getAccountId())) {
-            summonerEntity.setAccountId(summoner.getAccountId());
-            hasChanged = true;
-        }
         if (summoner.getSummonerLevel() != summonerEntity.getLevel()) {
             if (summoner.getSummonerLevel() / 100 > summonerEntity.getLevel() / 100) {
                 if (summoner.getSummonerLevel() > 999 && summoner.getSummonerLevel() / 1000 > summonerEntity.getLevel() / 1000) {
