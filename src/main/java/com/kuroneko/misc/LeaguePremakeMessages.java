@@ -125,7 +125,7 @@ public class LeaguePremakeMessages {
     public MessageEmbed championMastery1m(ChampionMastery championMastery, String summonerName, String championName) {
         EmbedBuilder embedBuilder = createBuilder();
 
-        String desc = "%s has reached %s on %s. You are hopeless Senpai. Consider suicide..".formatted(
+        String desc = "%s has reached %s on %s. You are hopeless Senpai, kill yourself or something..".formatted(
                 summonerName,
                 roundDownMasteryPoints(championMastery),
                 championName);
