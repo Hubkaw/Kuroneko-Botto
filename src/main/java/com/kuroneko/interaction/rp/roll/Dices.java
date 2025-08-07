@@ -6,124 +6,147 @@ import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Data
+import static com.kuroneko.config.CONSTANTS.*;
+
 public class Dices {
 
-    private static final Pattern dicePattern = Pattern.compile("(([0-9]*)?[d|k|D|K])?([0-9]+)([*])?([+-])?([0-9]+)?");
+    private static final Pattern dicePattern = Pattern.compile("(([0-9]*)?([dkeDKE]))?([0-9]+)([*])?([+-])?([0-9]+)?");
     private static final Logger log = LoggerFactory.getLogger(Dices.class);
 
-    boolean isValid;
-    private boolean isBonusPerRoll;
-    private int flatBonus;
-    private int amount;
+    private String input;
+    private int amount = 1;
     private int value;
-    private String pattern;
-    boolean isRolled = false;
-    List<Integer> results = new ArrayList<>();
+    private int bonus = 0;
+    private boolean isBonusPerRoll;
+    private boolean isExploding;
 
-    public Dices(String input) {
+    private List<RollOutcome> rollOutcomes = new ArrayList<>();
+
+    public Dices(String input, RNG rng) {
+        Matcher matcher = dicePattern.matcher(input);
+        if (!matcher.matches()) {
+            log.info("Unhandled dice input: {}", input);
+            throw new IllegalArgumentException("Invalid dice");
+        }
+
         try {
+            if (matcher.group(2) != null || !matcher.group(2).isBlank()) {
+                amount = Integer.parseInt(matcher.group(2));
+            }
 
-            Matcher matcher = dicePattern.matcher(input);
-            if (matcher.matches()) {
-                amount = matcher.group(2) == null || matcher.group(2).isBlank() ? 1 : Integer.parseInt(matcher.group(2));
-                value = Integer.parseInt(matcher.group(3));
-                pattern = input;
-                isBonusPerRoll = matcher.group(4) != null && !matcher.group(4).isBlank();
-                if (matcher.group(5) != null && !matcher.group(5).isBlank() && matcher.group(6) != null && !matcher.group(6).isBlank()) {
-                    flatBonus = Integer.parseInt(matcher.group(5) + matcher.group(6));
-                } else {
-                    flatBonus = 0;
-                }
-                isValid = amount <= 100 && value <= 10000;
+            isExploding = matcher.group(3) != null && !matcher.group(3).isBlank() && matcher.group(3).equalsIgnoreCase("e");
+
+            value = Integer.parseInt(matcher.group(4));
+
+            isBonusPerRoll = matcher.group(5) != null && !matcher.group(5).isBlank();
+
+            int sign;
+            if (matcher.group(6) == null || matcher.group(6).isBlank() || !matcher.group(6).equals("-")) {
+                sign = 1;
             } else {
-                isValid = false;
+                sign = -1;
+            }
+
+            if (matcher.group(7) != null && !matcher.group(7).isBlank()) {
+                bonus = Integer.parseInt(matcher.group(7)) * sign;
+            }
+
+            if (amount < LOWEST_DICE_AMOUNT || amount > HIGHEST_DICE_AMOUNT
+                    || value < LOWEST_DICE_VALUE || value > HIGHEST_DICE_VALUE) {
+                throw new IllegalArgumentException("Dice out of bounds");
             }
         } catch (Exception e) {
-            isValid = false;
             log.info("Unhandled dice input: {}", input);
+            throw new IllegalArgumentException("Invalid dice");
         }
+        this.input = input.toLowerCase();
+
+        roll(rng);
     }
 
-    public List<Integer> roll(RNG rng) {
-        if (!isValid) {
-            return null;
-        }
-        if (isRolled) {
-            return results;
-        }
+    private void roll(RNG rng) {
         for (int i = 0; i < amount; i++) {
-            results.add(rng.rollInt(value) + 1);
+            rollOutcome(rng);
         }
-        isRolled = true;
-        return results;
     }
 
-    public String getResultAsString(RNG rng) {
-        if (!isValid) {
-            throw new IllegalArgumentException("Invalid dice format");
-        }
-        if (!isRolled && rng == null) {
-            throw new IllegalStateException("Dices not rolled");
-        }
-        if (!isRolled) {
-            roll(rng);
-        }
 
+    private void rollOutcome(RNG rng) {
+        rollOutcome(rng, false);
+    }
+
+    private void rollOutcome(RNG rng, boolean isExploded) {
+        RollOutcome rollOutcome = new RollOutcome();
+        rollOutcome.isExploded = isExploded;
+        rollOutcome.setValue(rng.rollInt(value) + 1);
+        if (bonus != 0 && isBonusPerRoll) {
+            rollOutcome.setBonus(bonus);
+        }
+        rollOutcomes.add(rollOutcome);
+        if (isExploding && rollOutcome.getValue() == value) {
+            rollOutcome.setExploding(true);
+            rollOutcome(rng, true);
+        }
+    }
+
+
+    public String getAsString() {
+        return "**%s:** [(%s) SUM: **%s**]\n".formatted(input, createDiceString(), getSum());
+    }
+
+    private String createDiceString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("**").append(amount).append("d").append(value);
-        if (flatBonus != 0) {
-            if (isBonusPerRoll) {
-                sb.append("*");
+
+        for (int i = 0; i < rollOutcomes.size(); i++) {
+            RollOutcome r = rollOutcomes.get(i);
+
+            sb.append(r.getValue() + r.getBonus());
+
+            if (i != rollOutcomes.size() - 1) {
+                if (r.isExploding) {
+                    sb.append("!");
+                } else {
+                    sb.append(" ~ ");
+                }
             }
-            if (flatBonus > 0) {
-                sb.append("+");
-            }
-            sb.append(flatBonus);
-        }
-        sb.append("**: [");
-        if (getResults().size() > 1 || flatBonus != 0) {
-            sb.append("(");
-        }
-        int sum = 0;
-        for (int i = 0; i < amount; i++) {
-            if (i != 0) {
-                sb.append(" -");
-            }
-            Integer i1 = results.get(i);
-            sb.append(" ").append(i1).append(" ");
-            sum += isBonusPerRoll ? i1 + flatBonus : i1;
         }
 
-        if (flatBonus != 0) {
-            sb.append("/ ");
-            if (isBonusPerRoll) {
-                sb.append("*");
-            }
-            if (flatBonus > 0) {
-                sb.append("+");
-            }
-            sb.append(flatBonus).append(" ");
+        if (!isBonusPerRoll && bonus != 0) {
+            sb.append(" / ").append(bonus);
         }
-
-        if (getResults().size() > 1 || flatBonus != 0) {
-            sb.append(") ");
-            int total = isBonusPerRoll ? sum : sum + flatBonus;
-            sb.append("S: ").append(total);
-        }
-        if (getResults().size() > 1) {
-            String avg = new DecimalFormat("#.###").format(((double) sum) / ((double) amount));
-            sb.append(" A: ").append(avg);
-        }
-        sb.append("]\n");
 
         return sb.toString();
+    }
+
+    public Integer getSum() {
+        AtomicInteger outcome = new AtomicInteger(0);
+        if (isBonusPerRoll) {
+            rollOutcomes.forEach(r -> {
+                outcome.getAndAdd(r.getValue());
+                outcome.getAndAdd(r.getBonus());
+            });
+        } else {
+            rollOutcomes.forEach(r -> {
+                outcome.getAndAdd(r.getValue());
+            });
+            outcome.getAndAdd(bonus);
+        }
+        return outcome.get();
+    }
+
+
+    @Data
+    private class RollOutcome {
+        private int value;
+        private int bonus = 0;
+        private boolean isExploding = false;
+        private boolean isExploded = false;
     }
 
 }

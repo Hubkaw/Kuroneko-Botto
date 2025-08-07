@@ -1,7 +1,6 @@
 package com.kuroneko.interaction.rp.roll;
 
 import com.kuroneko.database.entity.MemberChannelEntity;
-import com.kuroneko.database.repository.MemberChannelRepository;
 import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.RNG;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -49,23 +48,23 @@ abstract class RollInteraction implements SlashInteraction {
             event.replyChoices(createChoices("", words)).queue();
             return;
         }
-        if (value.matches("([0-9]+)?([d|k])?1")) {
+        if (value.matches("([0-9]+)?([dkeDKE])?1")) {
             event.replyChoices(
                     createChoices(value, "00", "2", "0")
             ).queue();
             return;
         }
-        if (value.matches("([0-9]+)?[d|k|D|K]")) {
+        if (value.matches("([0-9]+)?[dkeDKE]")) {
             event.replyChoices(
                     createChoices(value, "100", "20", "10", "8", "6", "4")
             ).queue();
             return;
         }
-        if (value.matches("([0-9]+)?([d|k|D|K])?[0-9]+")) {
+        if (value.matches("([0-9]+)?([dkeDKE])?[0-9]+")) {
             event.replyChoices(new Command.Choice(value, value), new Command.Choice(value + "0", value + "0"), new Command.Choice(value + "00", value + "00")).queue();
             return;
         }
-        if (value.matches("(([0-9]*)?[d|k|D|K])?([0-9]+)([*])?([+-])?([0-9]+)?")) {
+        if (value.matches("(([0-9]*)?[dkeDKE])?([0-9]+)([*])?([+-])?([0-9]+)?")) {
             event.replyChoices(new Command.Choice(value, value)).queue();
             return;
         }
@@ -85,18 +84,18 @@ abstract class RollInteraction implements SlashInteraction {
                 String[] split = dicesAsString.split("[?,\s]\s*");
                 StringBuilder sb = new StringBuilder();
 
-                List<Dices> dicesList = Stream.of(split).map(Dices::new).filter(Dices::isValid).toList();
+                List<Dices> dicesList = Stream.of(split).map(s -> new Dices(s, getRNG())).toList();
                 if (dicesList.isEmpty()) {
                     sendMessage(event, rollError());
                     return;
                 }
 
-                dicesList.forEach(d -> sb.append(d.getResultAsString(getRNG())));
+                dicesList.forEach(d -> sb.append(d.getAsString()));
 
 
                 if (dicesList.size() > 1) {
                     AtomicInteger total = new AtomicInteger(0);
-                    dicesList.forEach(d -> d.getResults().forEach(total::addAndGet));
+                    dicesList.forEach(d -> total.getAndAdd(d.getSum()));
                     sb.append("Total: ").append(total.get());
                 }
 
