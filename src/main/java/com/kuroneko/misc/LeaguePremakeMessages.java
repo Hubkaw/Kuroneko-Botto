@@ -9,6 +9,7 @@ import no.stelar7.api.r4j.pojo.lol.championmastery.ChampionMastery;
 import no.stelar7.api.r4j.pojo.lol.league.LeagueEntry;
 import no.stelar7.api.r4j.pojo.lol.summoner.Summoner;
 import org.springframework.stereotype.Component;
+
 import java.awt.*;
 import java.text.DecimalFormat;
 
@@ -28,19 +29,21 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    private EmbedBuilder createBuilder(){
+    private EmbedBuilder createBuilder() {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Nerd Alert");
         embedBuilder.setColor(new Color(131, 246, 248));
         return embedBuilder;
     }
-    public MessageEmbed levelUp100Message(Summoner apiSummoner, SummonerEntity summonerEntity){
+
+    public MessageEmbed levelUp100Message(Summoner apiSummoner, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
         embedBuilder.setDescription("%s has reached %s level. Do you even go outside Senpai?".formatted(summonerEntity.getRiotId(), apiSummoner.getSummonerLevel()));
         embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
         return embedBuilder.build();
     }
-    public  MessageEmbed levelUp1kMessage(Summoner apiSummoner, SummonerEntity summonerEntity) {
+
+    public MessageEmbed levelUp1kMessage(Summoner apiSummoner, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
         embedBuilder.setDescription("%s has reached %s level. %s? Really? You must be an addicted NEET Senpai, disgusting.".formatted(summonerEntity.getRiotId(), apiSummoner.getSummonerLevel(), apiSummoner.getSummonerLevel()));
         embedBuilder.setThumbnail("https://blog.jlist.com/wp-content/uploads/2019/06/ten-things-the-Japanese-really-hate___.jpg");
@@ -96,21 +99,22 @@ public class LeaguePremakeMessages {
     }
 
 
-    private int calcWinRate(int wins, int losses){
+    private int calcWinRate(int wins, int losses) {
         return (int) Math.round((Double.valueOf(wins) / Double.valueOf(wins + losses)) * 100);
     }
-    private int roundDownMasteryPoints(ChampionMastery championMastery){
-        return  (championMastery.getChampionPoints()/100000) * 100000;
+
+    private int roundDownMasteryPoints(ChampionMastery championMastery) {
+        return (championMastery.getChampionPoints() / 100000) * 100000;
     }
 
 
-    public MessageEmbed championMastery100k(ChampionMastery championMastery, String summonerName, String championName){
+    public MessageEmbed championMastery100k(ChampionMastery championMastery, String summonerName, String championName) {
         EmbedBuilder embedBuilder = createBuilder();
 
         String desc = "%s has reached %s on %s. Senpai.. You shouldn't play this much...".formatted(
-                        summonerName,
-                        roundDownMasteryPoints(championMastery),
-                        championName);
+                summonerName,
+                roundDownMasteryPoints(championMastery),
+                championName);
 
         embedBuilder.setDescription(desc);
         embedBuilder.setThumbnail("https://static.wikia.nocookie.net/legendsofthemultiuniverse/images/7/70/601688_244053312399560_1367539327_n.jpg/revision/latest?cb=20130526154157");
@@ -118,10 +122,10 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed championMastery1m(ChampionMastery championMastery, String summonerName, String championName){
+    public MessageEmbed championMastery1m(ChampionMastery championMastery, String summonerName, String championName) {
         EmbedBuilder embedBuilder = createBuilder();
 
-        String desc = "%s has reached %s on %s. You are hopeless Senpai. Don't talk to me anymore..".formatted(
+        String desc = "%s has reached %s on %s. You are hopeless Senpai. Consider suicide..".formatted(
                 summonerName,
                 roundDownMasteryPoints(championMastery),
                 championName);
@@ -132,12 +136,13 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed championLevelUpdateBy10(ChampionMastery championMastery, String summonerName, String championName, int level){
+    public MessageEmbed championLevelUpdateBy10(ChampionMastery championMastery, String summonerName, String championName) {
         EmbedBuilder embedBuilder = createBuilder();
 
+
         String desc = "%s has reached mastery level %s on %s. Don't think that makes you a good player Senpai.. ".formatted(
-                level,
                 summonerName,
+                championMastery.getChampionLevel(),
                 championName);
 
         embedBuilder.setDescription(desc);
