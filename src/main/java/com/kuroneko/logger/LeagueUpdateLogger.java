@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.unions.GuildMessageChannelUnion;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ public class LeagueUpdateLogger {
     private LoggingService loggingService;
     private JDA jda;
 
+    @Async
     public void log(MessageEmbed embed, GuildMessageChannelUnion channel) {
 
         loggingService.log(
