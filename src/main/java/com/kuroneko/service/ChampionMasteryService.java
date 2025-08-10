@@ -27,7 +27,6 @@ import static com.kuroneko.config.CONSTANTS.*;
 @Service
 @AllArgsConstructor
 @Slf4j
-@Transactional
 public class ChampionMasteryService {
 
     private final LeaguePremakeMessages leaguePremakeMessages;
