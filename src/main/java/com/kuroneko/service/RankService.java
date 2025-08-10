@@ -21,7 +21,6 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-@Transactional
 public class RankService {
 
     private static final List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5);

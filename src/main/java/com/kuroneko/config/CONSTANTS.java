@@ -10,4 +10,6 @@ public class CONSTANTS {
     public static final int MASTERY_POINTS_MESSAGE_INTERVAL = 100000;
     public static final int MASTERY_LEVEL_MESSAGE_INTERVAL = 10;
 
+    public static final int LOG_ARGUMENT_CHUNK_SIZE = 255;
+
 }

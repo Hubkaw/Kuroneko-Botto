@@ -1,5 +1,6 @@
 package com.kuroneko.interaction;
 
+import com.kuroneko.logger.ButtonInteractionLogger;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
