@@ -10,6 +10,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.clients.AndroidVr;
 import dev.lavalink.youtube.clients.Music;
 import dev.lavalink.youtube.clients.TvHtml5Embedded;
 import dev.lavalink.youtube.clients.Web;
@@ -30,7 +31,7 @@ public class PlayerManager {
     public PlayerManager() {
         musicManagers = new HashMap<>();
         audioPlayerManager = new DefaultAudioPlayerManager();
-        YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(true, new Music(), new TvHtml5Embedded(), new Web());
+        YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(true, new Music(), new TvHtml5Embedded(), new Web(), new AndroidVr());
         youtube.useOauth2(ConfigLoader.getConfig().getYoutubeToken(), true);
         audioPlayerManager.registerSourceManager(youtube);
         AudioSourceManagers.registerLocalSource(audioPlayerManager);
