@@ -46,7 +46,7 @@ If you have ideas, bug reports, or want to add features, open an issue or PR.
 Questions? Reach out to me directly on discord @hubkaw.
 
 ### Creating Commands
-The simples way to create a new command is:
+The simplest way to create a new command is:
 - Prepare local configuration according to ConfigLoader class (Only discord token and database login/password are required) 
 - Create a @Component that implements SlashInteraction interface in the Interaction package. SlashInteractionManager will find and add the command automatically.
 - Implement the methods (autocomplete is optional, just turn it off in CommandData)
