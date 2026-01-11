@@ -7,7 +7,6 @@ import com.kuroneko.database.repository.RankRepository;
 import com.kuroneko.database.repository.SummonerRepository;
 import com.kuroneko.misc.LeaguePremakeMessages;
 import com.kuroneko.misc.LeagueTierHelper;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
@@ -73,7 +72,11 @@ public class RankService {
             }
 
             if (!rankEntity.getTier().equals(leagueEntry.getTierDivisionType())){
-                if (LeagueTierHelper.compareTiers(rankEntity.getTier(), leagueEntry.getTierDivisionType()) > 0) {
+                if (TierDivisionType.CHALLENGER_I.equals(leagueEntry.getTierDivisionType())
+                        && GameQueueType.RANKED_SOLO_5X5.equals(leagueEntry.getQueueType())) {
+                    result.add(premadeMessages.soloQueueChallengerRankUpMessage(leagueEntry, summonerEntity));
+                }
+                else if (LeagueTierHelper.compareTiers(rankEntity.getTier(), leagueEntry.getTierDivisionType()) > 0) {
                     result.add(premadeMessages.tierDownMessage(leagueEntry, summonerEntity));
                 } else {
                     result.add(premadeMessages.tierUpMessage(leagueEntry, summonerEntity));

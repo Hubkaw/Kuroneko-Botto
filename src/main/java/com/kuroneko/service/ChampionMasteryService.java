@@ -35,6 +35,7 @@ public class ChampionMasteryService {
     private ChampionRepository championRepository;
     private DDragonService dDragonService;
 
+    @Transactional
     public SummonerEntity createChampionMasteryForKnownSummoner(Summoner summoner) {
         SummonerEntity summonerEntity = summonerRepository.findById(summoner.getPUUID()).orElse(null);
         if (summonerEntity == null) {

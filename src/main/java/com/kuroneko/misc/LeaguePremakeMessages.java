@@ -61,12 +61,7 @@ public class LeaguePremakeMessages {
                         leagueEntry.getTierDivisionType().prettyName(),
                         leagueEntry.getLeaguePoints());
 
-        String footer = "%s wins - %s losses - (%s%% win rate) - %s"
-                .formatted(
-                        leagueEntry.getWins(),
-                        leagueEntry.getLosses(),
-                        calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()),
-                        summonerEntity.getRegion().name());
+        String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
 
         embedBuilder.setFooter(footer);
         embedBuilder.setDescription(desc);
@@ -85,12 +80,7 @@ public class LeaguePremakeMessages {
                         leagueEntry.getTierDivisionType().prettyName(),
                         leagueEntry.getLeaguePoints());
 
-        String footer = "%s wins - %s losses - (%s%% win rate) - %s"
-                .formatted(
-                        leagueEntry.getWins(),
-                        leagueEntry.getLosses(),
-                        calcWinRate(leagueEntry.getWins(), leagueEntry.getLosses()),
-                        summonerEntity.getRegion().name());
+        String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
 
         embedBuilder.setFooter(footer);
         embedBuilder.setDescription(desc);
@@ -149,5 +139,30 @@ public class LeaguePremakeMessages {
         embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
         embedBuilder.setFooter(masteryFormat.format(championMastery.getChampionPoints()) + " mastery points");
         return embedBuilder.build();
+    }
+
+    public MessageEmbed soloQueueChallengerRankUpMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
+        EmbedBuilder embedBuilder = createBuilder();
+        String queueName = leagueEntry.getQueueType().prettyName();
+
+        String desc = "%s has reached Challenger in Solo Queue with %d LP. I guess you're pretty cool senpai.. do you.. do you have a girlfriend?"
+                .formatted(
+                        summonerEntity.getRiotId(),
+                        leagueEntry.getLeaguePoints());
+
+        String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
+        embedBuilder.setFooter(footer);
+        embedBuilder.setDescription(desc);
+        embedBuilder.setThumbnail(dDragonService.getIconLink(summonerEntity.getIconId()));
+        return embedBuilder.build();
+    }
+
+    private String createWinrateFooter(int wins, int losses, String regionName) {
+        return "%s wins - %s losses - (%s%% win rate) - %s"
+                .formatted(
+                        wins,
+                        losses,
+                        calcWinRate(wins, losses),
+                        regionName);
     }
 }
