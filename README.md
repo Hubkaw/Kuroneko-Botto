@@ -7,7 +7,6 @@
 Kuroneko is a discord bot that plays music, rolls dice, tracks League of Legends ranks and helps with online ttrpg.  
 To check her commands type '/' and discord will suggest them.    
 You can add Kuroneko to your discord server [here](https://discord.com/api/oauth2/authorize?client_id=738883479902617670&permissions=8&scope=bot)  
-or visit kuroneko.ano.ninja.
   
 ## Features
 ## Music Playback
