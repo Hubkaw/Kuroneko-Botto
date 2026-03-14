@@ -13,15 +13,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class Bot {
+public class KuronekoBotto {
 
     private final JDA JDA;
 
-    public Bot(SlashInteractionManager sim,
-               VoiceChannelUpdateHandler vcuh,
-               CustomMessageManager cmm,
-               ButtonInteractionManager bim) {
-        JDA = JDABuilder.createDefault(ConfigLoader.getConfig().getDiscordToken())
+    public KuronekoBotto(SlashInteractionManager sim,
+                         VoiceChannelUpdateHandler vcuh,
+                         CustomMessageManager cmm,
+                         ButtonInteractionManager bim,
+                         KuronekoTokens kuronekoTokens) {
+        JDA = JDABuilder.createDefault(kuronekoTokens.discord())
                 .enableIntents(GatewayIntent.getIntents(GatewayIntent.ALL_INTENTS))
                 .enableCache(CacheFlag.EMOJI, CacheFlag.VOICE_STATE)
                 .addEventListeners(sim)
