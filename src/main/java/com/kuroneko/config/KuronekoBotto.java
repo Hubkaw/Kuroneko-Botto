@@ -1,11 +1,14 @@
 package com.kuroneko.config;
 
+import club.minnced.discord.jdave.interop.JDaveSessionFactory;
 import com.kuroneko.interaction.ButtonInteractionManager;
 import com.kuroneko.interaction.SlashInteractionManager;
 import com.kuroneko.message.CustomMessageManager;
 import com.kuroneko.misc.VoiceChannelUpdateHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.audio.AudioModuleConfig;
+import net.dv8tion.jda.api.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -30,6 +33,11 @@ public class KuronekoBotto {
                 .addEventListeners(cmm)
                 .addEventListeners(bim)
                 .setActivity(Activity.listening("Ride on Time"))
+                .setAudioModuleConfig(
+                        new AudioModuleConfig()
+                                .withDaveSessionFactory(new JDaveSessionFactory())
+                                .withAudioSendFactory(new DefaultSendFactory())
+                )
                 .build();
     }
 
