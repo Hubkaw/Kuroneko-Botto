@@ -20,7 +20,7 @@ public class ButtonInteractionLogger {
         loggingService.log(
                 event.getUser(),
                 event.getTimeCreated().toLocalDateTime(),
-                event.getInteraction().getButton().getId(),
+                String.valueOf(event.getInteraction().getButton().getUniqueId()),
                 EventLogEntryEntity.EventType.BUTTON_INTERACTION,
                 event.getGuildChannel(),
                 new HashMap<>());

@@ -6,9 +6,8 @@ import com.kuroneko.database.repository.DnDSpellRepository;
 import com.kuroneko.misc.SpellDetailsResponse;
 import com.kuroneko.misc.SpellListResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
@@ -18,25 +17,34 @@ public class DnDRulebookService {
 
     private final DnDSpellRepository spellRepository;
     private final DnDSpellRepository dnDSpellRepository;
+    private final RestClient restClient;
 
-    RestTemplate restTemplate = new RestTemplateBuilder().build();
 
-
-    public DnDRulebookService(DnDSpellRepository spellRepository, DnDSpellRepository dnDSpellRepository) {
+    public DnDRulebookService(DnDSpellRepository spellRepository,
+                              DnDSpellRepository dnDSpellRepository,
+                              RestClient.Builder restClientBuilder) {
         this.spellRepository = spellRepository;
         this.dnDSpellRepository = dnDSpellRepository;
+        this.restClient = restClientBuilder.build();
     }
 
-    public List<DnDSpellEntity> findSpells(String name){
+    public List<DnDSpellEntity> findSpells(String name) {
         return spellRepository.findAllByNameContainingIgnoreCase(name);
     }
 
-    public DnDSpellEntity fetchFullSpell(DnDSpellEntity spellEntity){
+    public DnDSpellEntity fetchFullSpell(DnDSpellEntity spellEntity) {
 
-        if(!spellEntity.isDownloaded()) {
-            SpellDetailsResponse spellDetails = restTemplate.getForObject("https://www.dnd5eapi.co/api/spells/" + spellEntity.getIndex(), SpellDetailsResponse.class);
+        if (!spellEntity.isDownloaded()) {
+            SpellDetailsResponse spellDetails = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .scheme("https")
+                            .host("www.dnd5eapi.co")
+                            .path("/api/spells/{index}")
+                            .build(spellEntity.getIndex()))
+                    .retrieve()
+                    .body(SpellDetailsResponse.class);
 
-            if (spellDetails == null){
+            if (spellDetails == null) {
                 throw new RuntimeException("Failed to fetch spell details from the API");
             } else {
                 log.info("Fetched {} details from the API", spellEntity.getIndex());
@@ -47,18 +55,18 @@ public class DnDRulebookService {
         return spellEntity;
     }
 
-    public List<DnDSpellEntity> findAllSpells(){
+    public List<DnDSpellEntity> findAllSpells() {
         return spellRepository.findAll();
     }
 
-    public void initializeSpells(){
+    public void initializeSpells() {
         List<DnDSpellEntity> alreadyFetched = spellRepository.findAll();
         SpellListResponse spellListResponse = fetchSpellList();
-        if (alreadyFetched.isEmpty()){
+        if (alreadyFetched.isEmpty()) {
             saveFetchedSpells(spellListResponse.getResults());
-        } else if (alreadyFetched.size() == spellListResponse.getCount()){
+        } else if (alreadyFetched.size() == spellListResponse.getCount()) {
             log.info("Spells were already fetched");
-        } else if (alreadyFetched.size() < spellListResponse.getCount()){
+        } else if (alreadyFetched.size() < spellListResponse.getCount()) {
             log.info("New Spells found, saving...");
             List<SpellListResponse.SpellResult> fetchedDiff = spellListResponse.getResults().stream()
                     .filter(s -> alreadyFetched.stream()
@@ -76,9 +84,16 @@ public class DnDRulebookService {
         spellRepository.saveAll(newEntities);
     }
 
-    private SpellListResponse fetchSpellList(){
+    private SpellListResponse fetchSpellList() {
 
-        SpellListResponse response = restTemplate.getForObject("https://www.dnd5eapi.co/api/spells", SpellListResponse.class);
+        SpellListResponse response = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .scheme("https")
+                        .host("www.dnd5eapi.co")
+                        .path("/api/spells")
+                        .build()
+                ).retrieve()
+                .body(SpellListResponse.class);
 
         if (response == null) {
             throw new RuntimeException("Failed to fetch spells from the API");

@@ -17,6 +17,8 @@ import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 import org.springframework.stereotype.Component;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -36,14 +38,14 @@ public class Play extends MusicInteraction implements SlashInteraction {
         Guild guild = event.getGuild();
         OptionMapping link = event.getOption("link");
 
-        if(link == null || link.getAsString().isBlank()){
+        if (link == null || link.getAsString().isBlank()) {
             MessageEmbed embed = new KuronekoEmbed().setTitle("You can't do that Senpai~")
                     .setDescription("You must provide song's name or link").build();
             InteractionHook complete = event.replyEmbeds(embed).complete();
             complete.deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
             return;
         }
-        if(member.getVoiceState().getChannel()==null){
+        if (member.getVoiceState().getChannel() == null) {
             MessageEmbed embed = new KuronekoEmbed().setTitle("You can't do that Senpai~")
                     .setDescription("You are not connected to a voice channel").build();
             InteractionHook complete = event.replyEmbeds(embed).complete();
@@ -52,14 +54,14 @@ public class Play extends MusicInteraction implements SlashInteraction {
         }
         if (guild.getSelfMember().getVoiceState().inAudioChannel()
                 && !playerManager.getMusicManager(guild).scheduler.getQueue().isEmpty()
-                && guild.getSelfMember().getVoiceState().getChannel() != member.getVoiceState().getChannel()){
+                && guild.getSelfMember().getVoiceState().getChannel() != member.getVoiceState().getChannel()) {
             MessageEmbed embed = new KuronekoEmbed().setTitle("Im busy Senpai~")
-                    .setDescription("I am already playing, why don't you join me at " + guild.getSelfMember().getVoiceState().getChannel().getAsMention() +"?").build();
+                    .setDescription("I am already playing, why don't you join me at " + guild.getSelfMember().getVoiceState().getChannel().getAsMention() + "?").build();
             InteractionHook complete = event.replyEmbeds(embed).complete();
             complete.deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
             return;
         }
-        if(!guild.getSelfMember().getVoiceState().inAudioChannel()){
+        if (!guild.getSelfMember().getVoiceState().inAudioChannel()) {
             guild.getAudioManager().openAudioConnection(member.getVoiceState().getChannel());
         }
 
@@ -69,11 +71,11 @@ public class Play extends MusicInteraction implements SlashInteraction {
 
     private String prepareLink(String link) {
         String toBeSearched = "";
-        if (!link.contains("youtu.be/") && !link.contains("youtube.com/")){
+        if (!isValidUrl(link)) {
             toBeSearched += "ytsearch: ";
         }
 
-        if (link.contains("youtu.be/")){
+        if (link.contains("youtu.be/")) {
             toBeSearched += link.replace("youtu.be/", "www.youtube.com/watch?v=");
         } else {
             toBeSearched += link;
@@ -85,7 +87,29 @@ public class Play extends MusicInteraction implements SlashInteraction {
     @Override
     public CommandData getCommand() {
         SlashCommandData commandData = Commands.slash(getName(), "Play sound from a Youtube video");
-        commandData.addOption(OptionType.STRING, "link", "Link or name to be searched",true, false);
+        commandData.addOption(OptionType.STRING, "link", "Link or name to be searched", true, false);
         return commandData;
+    }
+
+    public boolean isValidUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return false;
+        }
+
+        String s = url.trim();
+
+        try {
+            new URL(s);
+            return true;
+        } catch (MalformedURLException e) {
+            if (!s.contains("://")) {
+                try {
+                    new URL("https://" + s);
+                    return true;
+                } catch (MalformedURLException e2) {
+                }
+            }
+            return false;
+        }
     }
 }
