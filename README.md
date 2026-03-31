@@ -29,7 +29,6 @@ You can add Kuroneko to your discord server [here](https://discord.com/api/oauth
 ## Extras
 - Comprehensive async logging of bot calls
 - Will post Rumia if provoked
-- Runs 24/7 on a $1.49 vps
 - Always up to date with main branch thanks to Jenkins
 
 ### Tech stack
