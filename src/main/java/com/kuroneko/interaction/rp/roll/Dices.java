@@ -16,7 +16,7 @@ import static com.kuroneko.config.CONSTANTS.*;
 
 public class Dices {
 
-    private static final Pattern dicePattern = Pattern.compile("(([0-9]*)?([dkeDKE]))?([0-9]+)([*])?([+-])?([0-9]+)?");
+    private static final Pattern dicePattern = Pattern.compile("((\\d+)?([dkeDKE]))?([0-9]+)(\\*)?([+-])?([0-9]+)?");
     private static final Logger log = LoggerFactory.getLogger(Dices.class);
 
     private String input;
@@ -36,7 +36,7 @@ public class Dices {
         }
 
         try {
-            if (matcher.group(2) != null || !matcher.group(2).isBlank()) {
+            if (matcher.group(2) != null && !matcher.group(2).isBlank()) {
                 amount = Integer.parseInt(matcher.group(2));
             }
 
@@ -47,7 +47,7 @@ public class Dices {
             isBonusPerRoll = matcher.group(5) != null && !matcher.group(5).isBlank();
 
             int sign;
-            if (matcher.group(6) == null || matcher.group(6).isBlank() || !matcher.group(6).equals("-")) {
+            if (matcher.group(6) != null && matcher.group(6).isBlank() || !"-".equals(matcher.group(6))) {
                 sign = 1;
             } else {
                 sign = -1;
@@ -62,8 +62,7 @@ public class Dices {
                 throw new IllegalArgumentException("Dice out of bounds");
             }
         } catch (Exception e) {
-            log.info("Unhandled dice input: {}", input);
-            throw new IllegalArgumentException("Invalid dice");
+            log.error("Unhandled dice input: {}", input, e);
         }
         this.input = input.toLowerCase();
 
