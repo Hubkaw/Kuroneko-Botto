@@ -2,9 +2,9 @@ package com.kuroneko.interaction.rp.inititative;
 
 import com.kuroneko.interaction.ButtonInteraction;
 import lombok.Getter;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,8 +20,8 @@ public class InitiativeFinishButton implements ButtonInteraction {
     }
 
     @Override
-    public String getId() {
-        return button.getId();
+    public int getId() {
+        return button.getUniqueId();
     }
 
     @Override

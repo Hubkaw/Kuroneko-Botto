@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class RiotApi extends R4J {
-    public RiotApi() {
-        super(new APICredentials(ConfigLoader.getConfig().getRiotToken()));
+
+    public RiotApi(KuronekoTokens appTokens) {
+        super(new APICredentials(appTokens.riot()));
         DataCall.setCacheProvider(EmptyCacheProvider.INSTANCE);
     }
 }
