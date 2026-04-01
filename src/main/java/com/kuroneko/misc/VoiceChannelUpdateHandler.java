@@ -44,6 +44,7 @@ public class VoiceChannelUpdateHandler extends ListenerAdapter {
             event.getGuild().getAudioManager().closeAudioConnection();
         }
         playerManager.getMusicManager(event.getGuild()).scheduler.skipAll();
+        playerManager.getMusicManager(event.getGuild()).scheduler.setLooped(false);
     }
 
     @AllArgsConstructor
