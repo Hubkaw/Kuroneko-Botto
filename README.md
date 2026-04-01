@@ -32,9 +32,9 @@ You can add Kuroneko to your discord server [here](https://discord.com/api/oauth
 - Always up to date with main branch thanks to Jenkins
 
 ### Tech stack
-- Spring Boot 3
+- Spring Boot 4
 - Hibernate with PostgreSQL
-- APIs: Riot Games (R4J library), D&D 5e, Lavaplayer (with youtube-source)
+- APIs: JDA, Riot Games (R4J library), D&D 5e, Lavaplayer (with youtube-source)
 - Thymeleaf for the invite page
 - Hosted with Jenkins
 
@@ -45,7 +45,7 @@ Questions? Reach out to me directly on discord @hubkaw.
 
 ### Creating Commands
 The simplest way to create a new command is:
-- Prepare local configuration according to ConfigLoader class (Only discord token and database login/password are required) 
+- Prepare local configuration according to application.properties (You will need your own postgres db credentials as well as discord token)
 - Create a @Component that implements SlashInteraction interface in the Interaction package. SlashInteractionManager will find and add the command automatically.
 - Implement the methods (autocomplete is optional, just turn it off in CommandData)
 - Test if it works!
