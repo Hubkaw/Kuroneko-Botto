@@ -40,7 +40,7 @@ public class MatchHistoryService {
                 continue;
             }
 
-            var matchEntity = matchRepository.findByMatchId(match.getGameId());
+            var matchEntity = matchRepository.findById(match.getGameId());
             if (matchEntity.isEmpty()) {
                 newMatchPlayed = true;
                 var newMatchEntity = MatchMapper.map(match);
@@ -76,7 +76,7 @@ public class MatchHistoryService {
         if (matches.isEmpty()) {return new StreakResult(0, null);}
 
         if (matches.size() == 1) {
-            return matches.get(0).isDidWin() ? new StreakResult(1, StreakType.WIN_STREAK) : new StreakResult(1, StreakType.LOSE_STREAK);
+            return matches.getFirst().isDidWin() ? new StreakResult(1, StreakType.WIN_STREAK) : new StreakResult(1, StreakType.LOSE_STREAK);
         }
 
         var latestMatch = matches.get(0);
