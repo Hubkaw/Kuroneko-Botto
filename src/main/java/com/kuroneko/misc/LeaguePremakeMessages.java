@@ -150,4 +150,67 @@ public class LeaguePremakeMessages {
         embedBuilder.setFooter(masteryFormat.format(championMastery.getChampionPoints()) + " mastery points");
         return embedBuilder.build();
     }
+
+    public MessageEmbed gameLost(String summonerName, int matchTime, int loseStreak) {
+        EmbedBuilder embedBuilder = createBuilder();
+        String desc;
+        if (loseStreak == 1) {
+            desc = "%s threw yet another game in his life and wasted %s minutes for this. You could take at leas one shower with that time You smelly fart.".formatted(
+                    summonerName,
+                    matchTime);
+        } else {
+            desc = "%s has wasted %s minutes of his life just to lose %s times in a row! I hope You got reported Senpai..".formatted(
+                    summonerName,
+                    matchTime,
+                    loseStreak);
+        }
+
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+
+        return embedBuilder.build();
+    }
+
+    public MessageEmbed gameWon(String summonerName, int winStreak) {
+        EmbedBuilder embedBuilder = createBuilder();
+        String desc;
+
+        if (winStreak == 1) {
+            desc = "%s won a game, but don't get used to it, Your team can't carry You every single time.".formatted(
+                    summonerName);
+        } else {
+            desc = "%s was carried %s times in a row! You can't even throw a game properly..".formatted(
+                    summonerName,
+                    winStreak);
+        }
+        embedBuilder.setDescription(desc);
+        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+
+        return embedBuilder.build();
+    }
+
+    public MessageEmbed gameWonAfterLoseStreak(String summonerName) {
+        EmbedBuilder embedBuilder = createBuilder();
+
+        String desc = "Looks like %s was carried and broke his losing streak... at least for now. Remember Senpai, You're still a loser in real life".formatted(
+                summonerName);
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+
+        return embedBuilder.build();
+    }
+
+    public MessageEmbed gameLostAfterWinStreak(String summonerName) {
+        EmbedBuilder embedBuilder = createBuilder();
+
+        String desc = "You can only be carried so many times Senpai. How does it feel to throw perfectly winnable game? (Don't respond idk how You feel)".formatted(
+                summonerName);
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+
+        return embedBuilder.build();
+    }
 }

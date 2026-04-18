@@ -38,4 +38,9 @@ public class SummonerEntity {
     @ToString.Exclude
     @OneToMany(mappedBy = "summoner", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<RankEntity> ranks = new HashSet<>();
+
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @OneToMany(mappedBy = "summoner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<MatchSummonerEntity> matches = new HashSet<>();
 }

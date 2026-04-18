@@ -3,6 +3,7 @@ package com.kuroneko.scheduled;
 import com.kuroneko.database.entity.SummonerEntity;
 import com.kuroneko.database.repository.ChannelRepository;
 import com.kuroneko.service.ChampionMasteryService;
+import com.kuroneko.service.MatchHistoryService;
 import com.kuroneko.service.RankService;
 import com.kuroneko.service.SummonerService;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ public class SummonerUpdater {
     private ChannelRepository channelRepository;
     private RankService rankService;
     private ChampionMasteryService championMasteryService;
+    private MatchHistoryService matchHistoryService;
 
     @Scheduled(cron = "0 */5 * * * *")
     public void updateEvery5Minutes() {
@@ -49,6 +51,7 @@ public class SummonerUpdater {
             outputs.addAll(summonerService.checkSummonerInfo(s, summoner));
             outputs.addAll(rankService.checkRanks(summoner, s));
             outputs.addAll(championMasteryService.checkChampionMasteries(summoner, s));
+            outputs.addAll(matchHistoryService.checkMatchHistory(summoner, s));
 
             sendMessagesToChannels(s, outputs);
         });
