@@ -36,7 +36,6 @@ public class MatchHistoryService {
                     .filter(loser -> loser.getPuuid().equals(summoner.getPUUID()))
                     .findFirst().orElse(null);
 
-            // should never happen...
             if (matchParticipant == null) {
                 continue;
             }
@@ -59,7 +58,6 @@ public class MatchHistoryService {
                 return result;
             }
 
-            // first or last?
             var timeThisLoserWasted = last12matches.stream().findFirst().get().getMatch().getGameDuration();
             var streakResult = calculateStreak(last12matches);
             switch(streakResult.streakType()) {
@@ -75,10 +73,8 @@ public class MatchHistoryService {
     }
 
     private StreakResult calculateStreak(List<MatchSummonerEntity> matches) {
-        // should never happen...
         if (matches.isEmpty()) {return new StreakResult(0, null);}
 
-        // only one game in db, should never happen...
         if (matches.size() == 1) {
             return matches.get(0).isDidWin() ? new StreakResult(1, StreakType.WIN_STREAK) : new StreakResult(1, StreakType.LOSE_STREAK);
         }
