@@ -145,7 +145,7 @@ public class LeaguePremakeMessages {
         EmbedBuilder embedBuilder = createBuilder();
         String desc;
         if (loseStreak == 1) {
-            desc = "%s threw yet another game in his life and wasted %s minutes for this. You could take at leas one shower with that time You smelly fart.".formatted(
+            desc = "%s threw yet another game in his life and wasted %s minutes for this. You could take at least one shower with that time You smelly fart.".formatted(
                     summonerName,
                     matchTime);
         } else {
@@ -202,28 +202,30 @@ public class LeaguePremakeMessages {
         embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
 
         return embedBuilder.build();
-    public MessageEmbed soloQueueChallengerRankUpMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
-        EmbedBuilder embedBuilder = createBuilder();
-        String queueName = leagueEntry.getQueueType().prettyName();
-
-        String desc = "%s has reached Challenger in Solo Queue with %d LP. I guess you're pretty cool senpai.. do you.. do you have a girlfriend?"
-                .formatted(
-                        summonerEntity.getRiotId(),
-                        leagueEntry.getLeaguePoints());
-
-        String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
-        embedBuilder.setFooter(footer);
-        embedBuilder.setDescription(desc);
-        embedBuilder.setThumbnail(dDragonService.getIconLink(summonerEntity.getIconId()));
-        return embedBuilder.build();
     }
+        public MessageEmbed soloQueueChallengerRankUpMessage (LeagueEntry leagueEntry, SummonerEntity summonerEntity){
+            EmbedBuilder embedBuilder = createBuilder();
+            String queueName = leagueEntry.getQueueType().prettyName();
 
-    private String createWinrateFooter(int wins, int losses, String regionName) {
-        return "%s wins - %s losses - (%s%% win rate) - %s"
-                .formatted(
-                        wins,
-                        losses,
-                        calcWinRate(wins, losses),
-                        regionName);
-    }
+            String desc = "%s has reached Challenger in Solo Queue with %d LP. I guess you're pretty cool senpai.. do you.. do you have a girlfriend?"
+                    .formatted(
+                            summonerEntity.getRiotId(),
+                            leagueEntry.getLeaguePoints());
+
+            String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
+            embedBuilder.setFooter(footer);
+            embedBuilder.setDescription(desc);
+            embedBuilder.setThumbnail(dDragonService.getIconLink(summonerEntity.getIconId()));
+            return embedBuilder.build();
+        }
+
+        private String createWinrateFooter ( int wins, int losses, String regionName){
+            return "%s wins - %s losses - (%s%% win rate) - %s"
+                    .formatted(
+                            wins,
+                            losses,
+                            calcWinRate(wins, losses),
+                            regionName);
+        }
+
 }
