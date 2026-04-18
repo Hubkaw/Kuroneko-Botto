@@ -1,17 +1,21 @@
 package com.kuroneko.message.response;
 
-import com.kuroneko.config.ConfigLoader;
+import com.kuroneko.config.KuronekoIDs;
 import com.kuroneko.message.CustomMessageResponse;
+import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class OlekNieKumamResponse implements CustomMessageResponse {
+
+    private final KuronekoIDs kuronekoIDs;
 
     @Override
     public boolean isRelevant(MessageReceivedEvent event) {
         return event.getMember() != null
-                && event.getMember().getIdLong() == ConfigLoader.getConfig().getOlekID()
+                && event.getMember().getIdLong() == kuronekoIDs.olek()
                 && event.getMessage().getContentRaw().toLowerCase().contains("nie kumam");
     }
 

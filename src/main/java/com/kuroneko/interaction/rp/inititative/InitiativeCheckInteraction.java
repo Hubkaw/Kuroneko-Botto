@@ -5,6 +5,7 @@ import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.KuronekoEmbed;
 import com.kuroneko.misc.RNG;
 import lombok.AllArgsConstructor;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -15,7 +16,6 @@ import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.springframework.stereotype.Component;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +65,7 @@ public class InitiativeCheckInteraction implements SlashInteraction {
         if (initiativeCheck.getOriginalMessage() == null) {
 
             InteractionHook complete = event.replyEmbeds(embed)
-                    .setActionRow(Collections.singleton(finishButton.getButton()))
+                    .addComponents(ActionRow.of(finishButton.getButton()))
                     .setEphemeral(false)
                     .complete();
             initiativeCheck.setOriginalMessage(complete);

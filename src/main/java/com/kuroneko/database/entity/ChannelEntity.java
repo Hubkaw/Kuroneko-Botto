@@ -37,7 +37,7 @@ public class ChannelEntity {
     @OneToMany(mappedBy = "channel", fetch = FetchType.LAZY)
     private List<EventLogEntryEntity> log = new ArrayList<>();
 
-    @ManyToMany(cascade = {CascadeType.ALL},
+    @ManyToMany(cascade = {CascadeType.PERSIST},
             fetch = FetchType.EAGER)
     @JoinTable(
             name = "registered_in_channels",

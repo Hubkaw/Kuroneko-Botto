@@ -30,7 +30,7 @@ public class Loop extends MusicInteraction implements SlashInteraction {
         if (member.getVoiceState().getChannel()==selfMember.getVoiceState().getChannel()){
             GuildMusicManager musicManager = playerManager.getMusicManager(event.getGuild());
             boolean looped = musicManager.scheduler.isLooped();
-            musicManager.scheduler.setLoop(!looped);
+            musicManager.scheduler.setLooped(!looped);
             String onoff;
             if(looped){
                 onoff = "loop off";

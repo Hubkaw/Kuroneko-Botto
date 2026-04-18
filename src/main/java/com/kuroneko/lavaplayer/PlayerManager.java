@@ -1,6 +1,6 @@
 package com.kuroneko.lavaplayer;
 
-import com.kuroneko.config.ConfigLoader;
+import com.kuroneko.config.KuronekoTokens;
 import com.kuroneko.misc.KuronekoEmbed;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -10,9 +10,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
-import dev.lavalink.youtube.clients.Music;
-import dev.lavalink.youtube.clients.TvHtml5Embedded;
-import dev.lavalink.youtube.clients.Web;
+import dev.lavalink.youtube.YoutubeSourceOptions;
+import dev.lavalink.youtube.clients.*;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -27,11 +26,16 @@ public class PlayerManager {
     private final Map<Long, GuildMusicManager> musicManagers;
     private final AudioPlayerManager audioPlayerManager;
 
-    public PlayerManager() {
+    public PlayerManager(KuronekoTokens  kuronekoTokens) {
         musicManagers = new HashMap<>();
         audioPlayerManager = new DefaultAudioPlayerManager();
-        YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(true, new Music(), new TvHtml5Embedded(), new Web());
-        youtube.useOauth2(ConfigLoader.getConfig().getYoutubeToken(), true);
+
+        YoutubeSourceOptions youtubeSourceOptions = new YoutubeSourceOptions();
+        youtubeSourceOptions.setAllowSearch(true);
+        youtubeSourceOptions.setRemoteCipher("https://cipher.kikkia.dev/", "", "Kuroneko-Botto");
+
+        YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(youtubeSourceOptions, new Music(), new WebEmbedded(), new Web(), new Tv());
+        youtube.useOauth2(kuronekoTokens.youtube(), true);
         audioPlayerManager.registerSourceManager(youtube);
         AudioSourceManagers.registerLocalSource(audioPlayerManager);
         AudioSourceManagers.registerRemoteSources(audioPlayerManager);

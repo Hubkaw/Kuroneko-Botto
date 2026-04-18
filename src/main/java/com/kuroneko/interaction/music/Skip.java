@@ -34,12 +34,13 @@ public class Skip extends MusicInteraction implements SlashInteraction {
         OptionMapping amount = event.getOption("amount");
         TrackScheduler scheduler = playerManager.getMusicManager(event.getGuild()).scheduler;
         if(event.getMember().getVoiceState().getChannel()==selfMember.getVoiceState().getChannel()) {
+            scheduler.setLooped(false);
             if (amount == null || amount.getAsString().isBlank()){
                 int skipped = scheduler.skip(1);
                 event.replyEmbeds(skipResponse(skipped)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
                 return;
             }
-            if (amount.getAsString().equalsIgnoreCase("all")){
+            if (amount.getAsString().trim().equalsIgnoreCase("all")){
                 int i = scheduler.skipAll();
                 event.replyEmbeds(skipResponse(i)).complete().deleteOriginal().queueAfter(12, TimeUnit.SECONDS);
                 return;

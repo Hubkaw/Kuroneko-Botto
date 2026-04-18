@@ -1,5 +1,6 @@
 package com.kuroneko.interaction;
 
+import com.kuroneko.logger.SlashInteractionLogger;
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;

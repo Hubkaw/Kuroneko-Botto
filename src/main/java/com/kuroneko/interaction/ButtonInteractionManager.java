@@ -1,5 +1,6 @@
 package com.kuroneko.interaction;
 
+import com.kuroneko.logger.ButtonInteractionLogger;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,7 @@ import java.util.TreeMap;
 @Component
 public class ButtonInteractionManager extends ListenerAdapter {
 
-    private final Map<String, ButtonInteraction> buttonMap = new TreeMap<>();
+    private final Map<Integer, ButtonInteraction> buttonMap = new TreeMap<>();
     private ButtonInteractionLogger logger;
 
     public ButtonInteractionManager(Set<ButtonInteraction> buttonInteractions,
@@ -21,7 +22,7 @@ public class ButtonInteractionManager extends ListenerAdapter {
 
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
-        ButtonInteraction buttonInteraction = buttonMap.get(event.getButton().getId());
+        ButtonInteraction buttonInteraction = buttonMap.get(event.getButton().getUniqueId());
 
         if (buttonInteraction != null) {
             logger.log(event);

@@ -7,6 +7,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +20,8 @@ public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
     @Getter
     private final BlockingQueue<AudioTrack> queue;
+    @Getter
+    @Setter
     private boolean isLooped;
 
 
@@ -57,10 +60,6 @@ public class TrackScheduler extends AudioEventAdapter {
         return skipped;
     }
 
-    public void setLoop(boolean looped) {
-        isLooped = looped;
-    }
-
     public int skipAll() {
         int size = queue.size();
         queue.clear();
@@ -85,9 +84,5 @@ public class TrackScheduler extends AudioEventAdapter {
         exception.printStackTrace();
     }
 
-
-    public boolean isLooped() {
-        return isLooped;
-    }
 
 }
