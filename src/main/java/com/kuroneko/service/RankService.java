@@ -18,12 +18,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.kuroneko.config.CONSTANTS.RELEVANT_QUEUES;
+
 @Service
 @AllArgsConstructor
 public class RankService {
-
-    private static final List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5);
-
     private SummonerRepository summonerRepository;
     private RankRepository rankRepository;
     private LeaguePremakeMessages premadeMessages;

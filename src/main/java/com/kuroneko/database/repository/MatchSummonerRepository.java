@@ -13,10 +13,12 @@ public interface MatchSummonerRepository extends JpaRepository<MatchSummonerEnti
 
     @Query("""
         SELECT ms FROM MatchSummonerEntity ms
-        JOIN ms.match m
+        JOIN FETCH ms.match m
         WHERE ms.summoner.puuid = :puuid
         ORDER BY m.gameStart DESC
-        LIMIT 12
+        LIMIT :matches
     """)
-    List<MatchSummonerEntity> findLast12MatchesBySummonerId(@Param("puuid") String puuid);
+    List<MatchSummonerEntity> findLastMatchesBySummonerId(@Param("puuid") String puuid, @Param("matches") int matches);
+
+    boolean existsBySummonerPuuid(String puuid);
 }

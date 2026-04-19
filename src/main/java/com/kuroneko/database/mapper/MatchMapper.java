@@ -9,6 +9,7 @@ public class MatchMapper {
         matchEntity.setMatchId(match.getGameId());
         matchEntity.setGameName(match.getGameName());
         matchEntity.setGameType(match.getGameType());
+        matchEntity.setGameQueueType(match.getQueue());
         matchEntity.setGameModeType(match.getGameMode());
         matchEntity.setGameStart(match.getGameStartTimestamp());
         matchEntity.setGameDuration(match.getGameDuration());

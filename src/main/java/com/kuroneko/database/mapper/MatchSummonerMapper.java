@@ -4,10 +4,9 @@ import com.kuroneko.database.entity.MatchEntity;
 import com.kuroneko.database.entity.MatchSummonerEntity;
 import com.kuroneko.database.entity.SummonerEntity;
 import no.stelar7.api.r4j.pojo.lol.match.v5.MatchParticipant;
-import no.stelar7.api.r4j.pojo.lol.staticdata.champion.StaticChampion;
 
 public class MatchSummonerMapper {
-    public static MatchSummonerEntity map(MatchEntity matchEntity, SummonerEntity summonerEntity, MatchParticipant matchParticipant, StaticChampion staticChampion) {
+    public static MatchSummonerEntity map(MatchEntity matchEntity, SummonerEntity summonerEntity, MatchParticipant matchParticipant) {
         MatchSummonerEntity matchSummonerEntity = new MatchSummonerEntity();
         matchSummonerEntity.setMatch(matchEntity);
         matchSummonerEntity.setSummoner(summonerEntity);
@@ -23,7 +22,7 @@ public class MatchSummonerMapper {
         matchSummonerEntity.setTotalDamageTaken(matchParticipant.getTotalDamageTaken());
         matchSummonerEntity.setLane(matchParticipant.getLane());
         matchSummonerEntity.setWardsPlaced(matchParticipant.getWardsPlaced());
-        matchSummonerEntity.setChampion(ChampionMapper.map(staticChampion));
+        matchSummonerEntity.setChampionId(matchParticipant.getChampionId());
         return matchSummonerEntity;
     }
 }

@@ -141,91 +141,99 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameLost(String summonerName, int matchTime, int loseStreak) {
+    public MessageEmbed gameLost(String summonerName, String matchTimePretty, int loseStreak, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
         String desc;
         if (loseStreak == 1) {
-            desc = "%s threw yet another game in his life and wasted %s minutes for this. You could take at least one shower with that time You smelly fart.".formatted(
+            desc = "%s threw yet another %s game in his life and wasted %s for this. You could take at least one shower with that time You smelly fart.".formatted(
                     summonerName,
-                    matchTime);
+                    queue,
+                    matchTimePretty);
         } else {
-            desc = "%s has wasted %s minutes of his life just to lose %s times in a row! I hope You got reported Senpai..".formatted(
+            desc = "%s lost a %s game and has wasted %s of his life just to lose %s times in a row! I hope You got reported Senpai..".formatted(
                     summonerName,
-                    matchTime,
+                    queue,
+                    matchTimePretty,
                     loseStreak);
         }
 
 
         embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
         embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
 
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameWon(String summonerName, int winStreak) {
+    public MessageEmbed gameWon(String summonerName, int winStreak, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
         String desc;
 
         if (winStreak == 1) {
-            desc = "%s won a game, but don't get used to it, Your team can't carry You every single time.".formatted(
-                    summonerName);
+            desc = "%s won a %s game, but don't get used to it, Your team can't carry You every single time.".formatted(
+                    summonerName, queue);
         } else {
-            desc = "%s was carried %s times in a row! You can't even throw a game properly..".formatted(
+            desc = "%s was carried in his %s games %s times in a row! You can't even throw a game properly..".formatted(
                     summonerName,
+                    queue,
                     winStreak);
         }
         embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
         embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
 
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameWonAfterLoseStreak(String summonerName) {
+    public MessageEmbed gameWonAfterLoseStreak(String summonerName, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
 
-        String desc = "Looks like %s was carried and broke his losing streak... at least for now. Remember Senpai, You're still a loser in real life".formatted(
-                summonerName);
+        String desc = "Looks like %s was carried in a %s game and broke his losing streak... at least for now. Remember Senpai, You're still a loser in real life".formatted(
+                summonerName, queue);
 
         embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
         embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
 
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameLostAfterWinStreak(String summonerName) {
+    public MessageEmbed gameLostAfterWinStreak(String summonerName, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
 
-        String desc = "You can only be carried so many times Senpai. How does it feel to throw perfectly winnable game? (Don't respond idk how You feel)".formatted(
-                summonerName);
+        String desc = "%s You can only be carried so many times Senpai. How does it feel to throw perfectly winnable %s game? (Don't respond idk how You feel)".formatted(
+                summonerName, queue);
 
         embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
         embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
 
         return embedBuilder.build();
     }
-        public MessageEmbed soloQueueChallengerRankUpMessage (LeagueEntry leagueEntry, SummonerEntity summonerEntity){
-            EmbedBuilder embedBuilder = createBuilder();
-            String queueName = leagueEntry.getQueueType().prettyName();
 
-            String desc = "%s has reached Challenger in Solo Queue with %d LP. I guess you're pretty cool senpai.. do you.. do you have a girlfriend?"
-                    .formatted(
-                            summonerEntity.getRiotId(),
-                            leagueEntry.getLeaguePoints());
+    public MessageEmbed soloQueueChallengerRankUpMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
+        EmbedBuilder embedBuilder = createBuilder();
+        String queueName = leagueEntry.getQueueType().prettyName();
 
-            String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
-            embedBuilder.setFooter(footer);
-            embedBuilder.setDescription(desc);
-            embedBuilder.setThumbnail(dDragonService.getIconLink(summonerEntity.getIconId()));
-            return embedBuilder.build();
-        }
+        String desc = "%s has reached Challenger in Solo Queue with %d LP. I guess you're pretty cool senpai.. do you.. do you have a girlfriend?"
+                .formatted(
+                        summonerEntity.getRiotId(),
+                        leagueEntry.getLeaguePoints());
 
-        private String createWinrateFooter ( int wins, int losses, String regionName){
-            return "%s wins - %s losses - (%s%% win rate) - %s"
-                    .formatted(
-                            wins,
-                            losses,
-                            calcWinRate(wins, losses),
-                            regionName);
-        }
+        String footer = createWinrateFooter(leagueEntry.getWins(), leagueEntry.getLosses(), summonerEntity.getRegion().name());
+        embedBuilder.setFooter(footer);
+        embedBuilder.setDescription(desc);
+        embedBuilder.setThumbnail(dDragonService.getIconLink(summonerEntity.getIconId()));
+        return embedBuilder.build();
+    }
+
+    private String createWinrateFooter(int wins, int losses, String regionName) {
+        return "%s wins - %s losses - (%s%% win rate) - %s"
+                .formatted(
+                        wins,
+                        losses,
+                        calcWinRate(wins, losses),
+                        regionName);
+    }
 
 }

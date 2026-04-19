@@ -17,11 +17,11 @@ public class MatchSummonerEntity {
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "summoner_id")
     private SummonerEntity summoner;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "match_id")
     private MatchEntity match;
 
@@ -40,7 +40,5 @@ public class MatchSummonerEntity {
     @Enumerated(EnumType.STRING)
     private LaneType lane;
 
-    @ManyToOne
-    @JoinColumn(name = "champion_id")
-    private ChampionEntity champion;
+    private int championId;
 }
