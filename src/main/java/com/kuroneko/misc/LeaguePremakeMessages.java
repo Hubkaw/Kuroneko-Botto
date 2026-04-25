@@ -141,46 +141,31 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameLost(String summonerName, String matchTimePretty, int loseStreak, String queue) {
+    public MessageEmbed gameLost(String summonerName, int matchTimeSeconds, int loseStreak, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
-        String desc;
-        if (loseStreak == 1) {
-            desc = "%s threw yet another %s game in his life and wasted %s for this. You could take at least one shower with that time You smelly fart.".formatted(
+        String desc = "%s lost a %s game and has wasted %s of his life. This is Your %s lose in a row! I hope You got reported Senpai..".formatted(
                     summonerName,
                     queue,
-                    matchTimePretty);
-        } else {
-            desc = "%s lost a %s game and has wasted %s of his life just to lose %s times in a row! I hope You got reported Senpai..".formatted(
-                    summonerName,
-                    queue,
-                    matchTimePretty,
+                    formatDuration(matchTimeSeconds),
                     loseStreak);
-        }
-
 
         embedBuilder.setDescription(desc);
         embedBuilder.setTitle("Nerd Alert • " + queue);
-        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
 
         return embedBuilder.build();
     }
 
     public MessageEmbed gameWon(String summonerName, int winStreak, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
-        String desc;
-
-        if (winStreak == 1) {
-            desc = "%s won a %s game, but don't get used to it, Your team can't carry You every single time.".formatted(
-                    summonerName, queue);
-        } else {
-            desc = "%s was carried in his %s games %s times in a row! You can't even throw a game properly..".formatted(
+        String desc = "%s was carried in his %s games %s times in a row! You can't even throw a game properly..".formatted(
                     summonerName,
                     queue,
                     winStreak);
-        }
+
         embedBuilder.setDescription(desc);
         embedBuilder.setTitle("Nerd Alert • " + queue);
-        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
 
         return embedBuilder.build();
     }
@@ -193,7 +178,7 @@ public class LeaguePremakeMessages {
 
         embedBuilder.setDescription(desc);
         embedBuilder.setTitle("Nerd Alert • " + queue);
-        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
 
         return embedBuilder.build();
     }
@@ -201,12 +186,12 @@ public class LeaguePremakeMessages {
     public MessageEmbed gameLostAfterWinStreak(String summonerName, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
 
-        String desc = "%s You can only be carried so many times Senpai. How does it feel to throw perfectly winnable %s game? (Don't respond idk how You feel)".formatted(
+        String desc = "%s You can only be carried so many times Senpai. How does it feel to throw perfectly winnable %s game?".formatted(
                 summonerName, queue);
 
         embedBuilder.setDescription(desc);
         embedBuilder.setTitle("Nerd Alert • " + queue);
-        embedBuilder.setThumbnail("https://i.imgur.com/wiOGsMJ.jpeg");
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
 
         return embedBuilder.build();
     }
@@ -234,6 +219,15 @@ public class LeaguePremakeMessages {
                         losses,
                         calcWinRate(wins, losses),
                         regionName);
+    }
+
+    public static String formatDuration(int seconds) {
+        if (seconds < 60) {
+            return seconds + "s";
+        }
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        return minutes + "m " + remainingSeconds + "s";
     }
 
 }

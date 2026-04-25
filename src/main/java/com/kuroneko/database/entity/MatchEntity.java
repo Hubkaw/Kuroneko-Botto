@@ -10,10 +10,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 public class MatchEntity {
     @Id
     private Long matchId;
@@ -31,8 +32,6 @@ public class MatchEntity {
     @Enumerated(EnumType.STRING)
     private GameQueueType gameQueueType;
 
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
     @OneToMany(mappedBy = "match", fetch = FetchType.EAGER)
     private Set<MatchSummonerEntity> participants = new HashSet<>();
 }

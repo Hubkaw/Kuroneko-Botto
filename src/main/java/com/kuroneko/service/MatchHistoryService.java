@@ -1,10 +1,9 @@
 package com.kuroneko.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.kuroneko.database.entity.MatchEntity;
 import com.kuroneko.database.entity.MatchSummonerEntity;
 import com.kuroneko.database.entity.SummonerEntity;
 import com.kuroneko.database.mapper.MatchMapper;
@@ -17,18 +16,15 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
 import no.stelar7.api.r4j.impl.lol.builders.matchv5.match.MatchBuilder;
 import no.stelar7.api.r4j.pojo.lol.match.v5.LOLMatch;
+import no.stelar7.api.r4j.pojo.lol.match.v5.MatchParticipant;
 import no.stelar7.api.r4j.pojo.lol.summoner.Summoner;
 import org.springframework.stereotype.Service;
 
-import static com.kuroneko.config.CONSTANTS.RELEVANT_QUEUES;
+import static com.kuroneko.config.CONSTANTS.*;
 
 @Service
 @AllArgsConstructor
 public class MatchHistoryService {
-    private static final int API_FETCH_MATCHES_CRON = 5;
-    private static final int API_FETCH_MATCHES_NEW_SUMMONER = 50;
-    private static final int FIND_MATCHES_COUNT = 50;
-
     private LeaguePremakeMessages premadeMessages;
     private MatchRepository matchRepository;
     private MatchSummonerRepository matchSummonerRepository;
@@ -36,40 +32,68 @@ public class MatchHistoryService {
 
     public List<MessageEmbed> checkMatchHistory(Summoner summoner, SummonerEntity summonerEntity) {
         List<MessageEmbed> result = new ArrayList<>();
+        List<MatchEntity> newMatches = new ArrayList<>();
+        List<MatchSummonerEntity> newMatchSummoners = new ArrayList<>();
+
         boolean newMatchPlayed = false;
-        boolean newSummoner = !matchSummonerRepository.existsBySummonerPuuid(summonerEntity.getPuuid());
+        boolean isNewSummoner = !matchSummonerRepository.existsBySummonerPuuid(summonerEntity.getPuuid());
 
-        var fetchCount = newSummoner ? API_FETCH_MATCHES_NEW_SUMMONER : API_FETCH_MATCHES_CRON;
+        int fetchCount = isNewSummoner ? API_FETCH_MATCHES_NEW_SUMMONER : API_FETCH_MATCHES_CRON;
 
-        List<String> matchIds = summoner.getLeagueGames()
+        List<String> matchIds = new ArrayList<>();
+        RELEVANT_QUEUES.forEach(queue -> matchIds.addAll(summoner.getLeagueGames()
                 .withCount(fetchCount)
+                .withQueue(queue)
                 .withPuuid(summonerEntity.getPuuid())
-                .get();
+                .get()));
+
+        Map<Long, MatchParticipant> participantByMatchId = new HashMap<>();
+        List<LOLMatch> lolMatches = new ArrayList<>();
 
         for (String matchId : matchIds) {
             LOLMatch match = new MatchBuilder(summoner.getPlatform())
                     .withId(matchId)
                     .getMatch();
 
-            var matchParticipant = match.getParticipants()
+            MatchParticipant matchParticipant = match.getParticipants()
                     .stream()
                     .filter(p -> p.getPuuid().equals(summonerEntity.getPuuid()))
-                    .findFirst().orElse(null);
+                    .findFirst().orElseThrow(() -> new NoSuchElementException(
+                            "Summoner with PUUID " + summonerEntity.getPuuid() + " not found in match " + matchId
+                    ));
 
-            if (matchParticipant == null) continue;
+            lolMatches.add(match);
+            participantByMatchId.put(match.getGameId(), matchParticipant);
+        }
 
-            var matchEntity = matchRepository.findById(match.getGameId());
-            if (matchEntity.isEmpty()) {
+        List<Long> gameIds = lolMatches.stream()
+                .map(LOLMatch::getGameId)
+                .toList();
+
+        Set<Long> existingMatchIds = new HashSet<>(matchRepository.findAllById(gameIds)
+                .stream()
+                .map(MatchEntity::getMatchId)
+                .toList());
+
+        for (LOLMatch match : lolMatches) {
+            if (!existingMatchIds.contains(match.getGameId())) {
                 newMatchPlayed = true;
-                var newMatchEntity = MatchMapper.map(match);
+                MatchEntity newMatchEntity = MatchMapper.map(match);
 
-                matchRepository.save(newMatchEntity);
-                matchSummonerRepository.save(MatchSummonerMapper.map(newMatchEntity, summonerEntity, matchParticipant));
+                newMatches.add(newMatchEntity);
+                newMatchSummoners.add(MatchSummonerMapper.map(
+                        newMatchEntity, summonerEntity, participantByMatchId.get(match.getGameId())
+                ));
             }
         }
 
-        if (newMatchPlayed && !newSummoner) {
-            var lastMatches = matchSummonerRepository.findLastMatchesBySummonerId(summonerEntity.getPuuid(), FIND_MATCHES_COUNT);
+        if (newMatchPlayed) {
+            matchRepository.saveAll(newMatches);
+            matchSummonerRepository.saveAll(newMatchSummoners);
+        }
+
+        if (newMatchPlayed && !isNewSummoner) {
+            List<MatchSummonerEntity> lastMatches = matchSummonerRepository.findLastMatchesBySummonerId(summonerEntity.getPuuid(), FIND_MATCHES_COUNT);
 
             if (lastMatches.isEmpty()) {
                 return result;
@@ -78,22 +102,34 @@ public class MatchHistoryService {
             Map<GameQueueType, List<MatchSummonerEntity>> groupedByQueue = lastMatches.stream()
                     .collect(Collectors.groupingBy(matchSummonerEntity -> matchSummonerEntity.getMatch().getGameQueueType()));
 
+            groupedByQueue.replaceAll((_, list) ->
+                    list.stream()
+                            .sorted(Comparator.comparingLong(
+                                    (MatchSummonerEntity matchSummonerEntity) -> matchSummonerEntity.getMatch().getGameStart()
+                            ).reversed())
+                            .collect(Collectors.toList())
+            );
+
             groupedByQueue.forEach((queue, matchSummonerList) -> {
                 if (!RELEVANT_QUEUES.contains(queue) || matchSummonerList.isEmpty()) {
                     return;
                 }
 
-                var gameQueueTypeCommon = queue.commonName().equals("This enum does not have a pretty name") ? queue.name() : queue.commonName();
-                var streakResult = calculateStreak(matchSummonerList);
-                switch(streakResult.streakType()) {
-                    case WIN_STREAK -> result.add(premadeMessages.gameWon(summonerEntity.getRiotId(),streakResult.count, gameQueueTypeCommon));
+                String gameQueueTypeCommon = queue.commonName().equals("This enum does not have a pretty name") ? queue.name() : queue.commonName();
+                StreakResult streakResult = calculateStreak(matchSummonerList);
+                switch (streakResult.streakType()) {
+                    case WIN_STREAK ->
+                            result.add(premadeMessages.gameWon(summonerEntity.getRiotId(), streakResult.count, gameQueueTypeCommon));
                     case LOSE_STREAK -> {
-                        var timeThisLoserWasted = formatDuration(matchSummonerList.stream().findFirst().get().getMatch().getGameDuration());
+                        int timeThisLoserWasted = matchSummonerList.stream().findFirst().get().getMatch().getGameDuration();
                         result.add(premadeMessages.gameLost(summonerEntity.getRiotId(), timeThisLoserWasted, streakResult.count, gameQueueTypeCommon));
                     }
-                    case WIN_AFTER_LOSE_STREAK -> result.add(premadeMessages.gameWonAfterLoseStreak(summonerEntity.getRiotId(), gameQueueTypeCommon));
-                    case LOSE_AFTER_WIN_STREAK -> result.add(premadeMessages.gameLostAfterWinStreak(summonerEntity.getRiotId(), gameQueueTypeCommon));
-                    default -> {}
+                    case WIN_AFTER_LOSE_STREAK ->
+                            result.add(premadeMessages.gameWonAfterLoseStreak(summonerEntity.getRiotId(), gameQueueTypeCommon));
+                    case LOSE_AFTER_WIN_STREAK ->
+                            result.add(premadeMessages.gameLostAfterWinStreak(summonerEntity.getRiotId(), gameQueueTypeCommon));
+                    case NO_STREAK -> {
+                    }
                 }
             });
         }
@@ -102,46 +138,58 @@ public class MatchHistoryService {
     }
 
     private StreakResult calculateStreak(List<MatchSummonerEntity> matches) {
-        if (matches.isEmpty()) {return new StreakResult(0, null);}
-
-        if (matches.size() == 1) {
-            return matches.getFirst().isDidWin() ? new StreakResult(1, StreakType.WIN_STREAK) : new StreakResult(1, StreakType.LOSE_STREAK);
+        if (matches.isEmpty()) {
+            return new StreakResult(0, StreakType.NO_STREAK);
         }
 
-        var latestMatch = matches.get(0);
-        var previousMatch = matches.get(1);
+        MatchSummonerEntity latest = matches.get(0);
+        boolean latestWin = latest.isDidWin();
 
-        if (latestMatch.isDidWin() == previousMatch.isDidWin()) {
-            int count = 1;
-            boolean didWin = latestMatch.isDidWin();
-            for (int i = 1; i < matches.size(); i++) {
-                if (matches.get(i).isDidWin() == didWin) {
-                    count++;
-                } else {
-                    break;
-                }
+        int currentStreak = 0;
+        for (MatchSummonerEntity match : matches) {
+            if (match.isDidWin() == latestWin) {
+                currentStreak++;
+            } else {
+                break;
             }
-            return didWin ? new StreakResult(count, StreakType.WIN_STREAK) : new StreakResult(count, StreakType.LOSE_STREAK);
-        } else {
-            return latestMatch.isDidWin() ? new StreakResult(1, StreakType.WIN_AFTER_LOSE_STREAK) : new StreakResult(1, StreakType.LOSE_AFTER_WIN_STREAK);
         }
+
+        int previousStreak = 0;
+        for (int i = currentStreak; i < matches.size(); i++) {
+            if (matches.get(i).isDidWin() != latestWin) {
+                previousStreak++;
+            } else {
+                break;
+            }
+        }
+
+        boolean previousWasStreak = previousStreak >= 5;
+
+        if (currentStreak == 1 && previousWasStreak) {
+            return latestWin
+                    ? new StreakResult(previousStreak, StreakType.WIN_AFTER_LOSE_STREAK)
+                    : new StreakResult(previousStreak, StreakType.LOSE_AFTER_WIN_STREAK);
+        }
+
+        boolean isStreakMilestone = currentStreak >= 5 && (currentStreak == 5 || (currentStreak - 5) % 3 == 0);
+
+        if (isStreakMilestone) {
+            return latestWin
+                    ? new StreakResult(currentStreak, StreakType.WIN_STREAK)
+                    : new StreakResult(currentStreak, StreakType.LOSE_STREAK);
+        }
+
+        return new StreakResult(currentStreak, StreakType.NO_STREAK);
     }
 
-    private record StreakResult(int count, StreakType streakType) {}
-
-    public static String formatDuration(int seconds) {
-        if (seconds < 60) {
-            return seconds + "s";
-        }
-        int minutes = seconds / 60;
-        int remainingSeconds = seconds % 60;
-        return minutes + "m " + remainingSeconds + "s";
+    private record StreakResult(int count, StreakType streakType) {
     }
 
     private enum StreakType {
         WIN_STREAK,
         LOSE_STREAK,
         WIN_AFTER_LOSE_STREAK,
-        LOSE_AFTER_WIN_STREAK
+        LOSE_AFTER_WIN_STREAK,
+        NO_STREAK
     }
 }
