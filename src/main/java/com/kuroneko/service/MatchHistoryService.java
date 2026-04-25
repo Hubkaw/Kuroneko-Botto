@@ -138,6 +138,8 @@ public class MatchHistoryService {
     }
 
     private StreakResult calculateStreak(List<MatchSummonerEntity> matches) {
+        int firstStreakMilestone = 5;
+        int nextStreakMilestones = 3;
         if (matches.isEmpty()) {
             return new StreakResult(0, StreakType.NO_STREAK);
         }
@@ -163,7 +165,7 @@ public class MatchHistoryService {
             }
         }
 
-        boolean previousWasStreak = previousStreak >= 5;
+        boolean previousWasStreak = previousStreak >= firstStreakMilestone;
 
         if (currentStreak == 1 && previousWasStreak) {
             return latestWin
@@ -171,7 +173,7 @@ public class MatchHistoryService {
                     : new StreakResult(previousStreak, StreakType.LOSE_AFTER_WIN_STREAK);
         }
 
-        boolean isStreakMilestone = currentStreak >= 5 && (currentStreak == 5 || (currentStreak - 5) % 3 == 0);
+        boolean isStreakMilestone = currentStreak >= firstStreakMilestone && (currentStreak == firstStreakMilestone || (currentStreak - firstStreakMilestone) % nextStreakMilestones == 0);
 
         if (isStreakMilestone) {
             return latestWin
