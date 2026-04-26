@@ -1,5 +1,9 @@
 package com.kuroneko.config;
 
+import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
+
+import java.util.List;
+
 public class CONSTANTS {
     public static final int LOWEST_DICE_VALUE = 2;
     public static final int HIGHEST_DICE_VALUE = 10000;
@@ -12,4 +16,12 @@ public class CONSTANTS {
 
     public static final int LOG_ARGUMENT_CHUNK_SIZE = 255;
 
+    public static final List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5, GameQueueType.TEAM_BUILDER_RANKED_SOLO);
+
+    public static final int API_FETCH_MATCHES_CRON = 5;
+    public static final int API_FETCH_MATCHES_NEW_SUMMONER = 15;
+    public static final int DB_FETCH_MATCHES = 25;
+
+    public static final int FIRST_STREAK_MILESTONE = 5;
+    public static final int NEXT_STREAK_MILESTONE = 3;
 }

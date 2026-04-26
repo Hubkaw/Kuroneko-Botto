@@ -141,6 +141,61 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
+    public MessageEmbed loseStreak(String summonerName, int sumAllMatchesTimeSeconds, int loseStreak, String queue) {
+        EmbedBuilder embedBuilder = createBuilder();
+        String desc = "%s lost a %s game %s times in a row and has wasted in total %s of his life. I hope You got reported Senpai..".formatted(
+                summonerName,
+                queue,
+                loseStreak,
+                formatDuration(sumAllMatchesTimeSeconds));
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
+
+        return embedBuilder.build();
+    }
+
+    public MessageEmbed winStreak(String summonerName, int winStreak, String queue) {
+        EmbedBuilder embedBuilder = createBuilder();
+        String desc = "%s was carried in his %s games %s times in a row! You can't even throw a game properly..".formatted(
+                summonerName,
+                queue,
+                winStreak);
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
+
+        return embedBuilder.build();
+    }
+
+    public MessageEmbed gameWonAfterLoseStreak(String summonerName, String queue) {
+        EmbedBuilder embedBuilder = createBuilder();
+
+        String desc = "Looks like %s was carried in a %s game and broke his losing streak... at least for now. Remember Senpai, You're still a loser in real life".formatted(
+                summonerName, queue);
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
+
+        return embedBuilder.build();
+    }
+
+    public MessageEmbed gameLostAfterWinStreak(String summonerName, String queue) {
+        EmbedBuilder embedBuilder = createBuilder();
+
+        String desc = "%s You can only be carried so many times Senpai. How does it feel to throw perfectly winnable %s game?".formatted(
+                summonerName, queue);
+
+        embedBuilder.setDescription(desc);
+        embedBuilder.setTitle("Nerd Alert • " + queue);
+        embedBuilder.setThumbnail("https://i.imgur.com/GBDhNFs.png");
+
+        return embedBuilder.build();
+    }
+
     public MessageEmbed soloQueueChallengerRankUpMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
         String queueName = leagueEntry.getQueueType().prettyName();
@@ -165,4 +220,14 @@ public class LeaguePremakeMessages {
                         calcWinRate(wins, losses),
                         regionName);
     }
+
+    public static String formatDuration(int seconds) {
+        if (seconds < 60) {
+            return seconds + "s";
+        }
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        return minutes + "m " + remainingSeconds + "s";
+    }
+
 }
