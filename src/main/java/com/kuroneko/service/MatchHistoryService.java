@@ -1,8 +1,5 @@
 package com.kuroneko.service;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.kuroneko.database.entity.MatchEntity;
 import com.kuroneko.database.entity.MatchSummonerEntity;
 import com.kuroneko.database.entity.SummonerEntity;
@@ -12,6 +9,7 @@ import com.kuroneko.database.repository.MatchRepository;
 import com.kuroneko.database.repository.MatchSummonerRepository;
 import com.kuroneko.misc.LeaguePremakeMessages;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
 import no.stelar7.api.r4j.impl.lol.builders.matchv5.match.MatchBuilder;
@@ -20,8 +18,12 @@ import no.stelar7.api.r4j.pojo.lol.match.v5.MatchParticipant;
 import no.stelar7.api.r4j.pojo.lol.summoner.Summoner;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.kuroneko.config.CONSTANTS.*;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class MatchHistoryService {
@@ -58,12 +60,15 @@ public class MatchHistoryService {
             MatchParticipant matchParticipant = match.getParticipants()
                     .stream()
                     .filter(p -> p.getPuuid().equals(summonerEntity.getPuuid()))
-                    .findFirst().orElseThrow(() -> new NoSuchElementException(
-                            "Summoner with PUUID " + summonerEntity.getPuuid() + " not found in match " + matchId
-                    ));
+                    .findFirst().orElseGet(() -> {
+                        log.error("Summoner with PUUID {} not found in match {}", summonerEntity.getPuuid(), matchId);
+                        return null;
+                    });
 
-            lolMatches.add(match);
-            participantByMatchId.put(match.getGameId(), matchParticipant);
+            if (matchParticipant != null) {
+                lolMatches.add(match);
+                participantByMatchId.put(match.getGameId(), matchParticipant);
+            }
         }
 
         List<Long> gameIds = lolMatches.stream()
