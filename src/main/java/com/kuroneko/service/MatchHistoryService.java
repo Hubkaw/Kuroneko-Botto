@@ -44,16 +44,29 @@ public class MatchHistoryService {
         int fetchCount = isNewSummoner ? API_FETCH_MATCHES_NEW_SUMMONER : API_FETCH_MATCHES_CRON;
 
         List<String> matchIds = new ArrayList<>();
-        RELEVANT_QUEUES.forEach(queue -> matchIds.addAll(summoner.getLeagueGames()
+        RELEVANT_QUEUES_MATCH_HISTORY.forEach(queue -> matchIds.addAll(summoner.getLeagueGames()
                 .withCount(fetchCount)
                 .withQueue(queue)
                 .withPuuid(summonerEntity.getPuuid())
                 .get()));
 
+        List<Long> longMatchIds = matchIds.stream().map(id -> Long.parseLong(id.split("_")[1])).toList();
+        Map<Long, MatchSummonerEntity> existingMatchIdsForSummoner =
+                matchSummonerRepository.findByMatchIdsAndSummonerPuuid(longMatchIds, summonerEntity.getPuuid())
+                        .stream()
+                        .collect(Collectors.toMap(
+                                matchSummonerEntity -> matchSummonerEntity.getMatch().getMatchId(),
+                                matchSummonerEntity -> matchSummonerEntity
+                        ));
+
+        List<String> newMatchIds = matchIds.stream()
+                .filter(matchId -> !existingMatchIdsForSummoner.containsKey(Long.parseLong(matchId.split("_")[1])))
+                .toList();
+
         Map<Long, MatchParticipant> participantByMatchId = new HashMap<>();
         List<LOLMatch> lolMatches = new ArrayList<>();
 
-        for (String matchId : matchIds) {
+        for (String matchId : newMatchIds) {
             LOLMatch match = new MatchBuilder(summoner.getPlatform())
                     .withId(matchId)
                     .getMatch();
@@ -82,14 +95,6 @@ public class MatchHistoryService {
                         MatchEntity::getMatchId,
                         matchEntity -> matchEntity
                 )));
-
-        Map<Long, MatchSummonerEntity> existingMatchIdsForSummoner =
-                matchSummonerRepository.findByMatchIdsAndSummonerPuuid(gameIds, summonerEntity.getPuuid())
-                        .stream()
-                        .collect(Collectors.toMap(
-                                matchSummonerEntity -> matchSummonerEntity.getMatch().getMatchId(),
-                                matchSummonerEntity -> matchSummonerEntity
-                        ));
 
         for (LOLMatch match : lolMatches) {
             if (!existingMatches.containsKey(match.getGameId())) {
@@ -136,7 +141,7 @@ public class MatchHistoryService {
             );
 
             groupedByQueue.forEach((queue, matchSummonerList) -> {
-                if (!RELEVANT_QUEUES.contains(queue) || matchSummonerList.isEmpty()) {
+                if (!RELEVANT_QUEUES_MATCH_HISTORY.contains(queue) || matchSummonerList.isEmpty()) {
                     return;
                 }
 
