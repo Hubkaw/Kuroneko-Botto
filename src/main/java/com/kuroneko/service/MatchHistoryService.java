@@ -93,7 +93,7 @@ public class MatchHistoryService {
         }
 
         if (newMatchPlayed && !isNewSummoner) {
-            List<MatchSummonerEntity> lastMatches = matchSummonerRepository.findLastMatchesBySummonerId(summonerEntity.getPuuid(), FIND_MATCHES_COUNT);
+            List<MatchSummonerEntity> lastMatches = matchSummonerRepository.findLastMatchesBySummonerId(summonerEntity.getPuuid(), DB_FETCH_MATCHES);
 
             if (lastMatches.isEmpty()) {
                 return result;
@@ -119,10 +119,13 @@ public class MatchHistoryService {
                 StreakResult streakResult = calculateStreak(matchSummonerList);
                 switch (streakResult.streakType()) {
                     case WIN_STREAK ->
-                            result.add(premadeMessages.gameWon(summonerEntity.getRiotId(), streakResult.count, gameQueueTypeCommon));
+                            result.add(premadeMessages.winStreak(summonerEntity.getRiotId(), streakResult.count, gameQueueTypeCommon));
                     case LOSE_STREAK -> {
-                        int timeThisLoserWasted = matchSummonerList.stream().findFirst().get().getMatch().getGameDuration();
-                        result.add(premadeMessages.gameLost(summonerEntity.getRiotId(), timeThisLoserWasted, streakResult.count, gameQueueTypeCommon));
+                        int timeThisLoserWasted = matchSummonerList.stream()
+                                .limit(streakResult.count)
+                                .mapToInt(matchSummonerEntity -> matchSummonerEntity.getMatch().getGameDuration())
+                                .sum();
+                        result.add(premadeMessages.loseStreak(summonerEntity.getRiotId(), timeThisLoserWasted, streakResult.count, gameQueueTypeCommon));
                     }
                     case WIN_AFTER_LOSE_STREAK ->
                             result.add(premadeMessages.gameWonAfterLoseStreak(summonerEntity.getRiotId(), gameQueueTypeCommon));
@@ -138,8 +141,6 @@ public class MatchHistoryService {
     }
 
     private StreakResult calculateStreak(List<MatchSummonerEntity> matches) {
-        int firstStreakMilestone = 5;
-        int nextStreakMilestones = 3;
         if (matches.isEmpty()) {
             return new StreakResult(0, StreakType.NO_STREAK);
         }
@@ -165,7 +166,7 @@ public class MatchHistoryService {
             }
         }
 
-        boolean previousWasStreak = previousStreak >= firstStreakMilestone;
+        boolean previousWasStreak = previousStreak >= FIRST_STREAK_MILESTONE;
 
         if (currentStreak == 1 && previousWasStreak) {
             return latestWin
@@ -173,7 +174,7 @@ public class MatchHistoryService {
                     : new StreakResult(previousStreak, StreakType.LOSE_AFTER_WIN_STREAK);
         }
 
-        boolean isStreakMilestone = currentStreak >= firstStreakMilestone && (currentStreak == firstStreakMilestone || (currentStreak - firstStreakMilestone) % nextStreakMilestones == 0);
+        boolean isStreakMilestone = currentStreak >= FIRST_STREAK_MILESTONE && (currentStreak == FIRST_STREAK_MILESTONE || (currentStreak - FIRST_STREAK_MILESTONE) % NEXT_STREAK_MILESTONE == 0);
 
         if (isStreakMilestone) {
             return latestWin

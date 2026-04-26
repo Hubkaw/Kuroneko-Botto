@@ -141,13 +141,13 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameLost(String summonerName, int matchTimeSeconds, int loseStreak, String queue) {
+    public MessageEmbed loseStreak(String summonerName, int sumAllMatchesTimeSeconds, int loseStreak, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
-        String desc = "%s lost a %s game and has wasted %s of his life. This is Your %s lose in a row! I hope You got reported Senpai..".formatted(
-                    summonerName,
-                    queue,
-                    formatDuration(matchTimeSeconds),
-                    loseStreak);
+        String desc = "%s lost a %s game %s times in a row and has wasted in total %s of his life. I hope You got reported Senpai..".formatted(
+                summonerName,
+                queue,
+                loseStreak,
+                formatDuration(sumAllMatchesTimeSeconds));
 
         embedBuilder.setDescription(desc);
         embedBuilder.setTitle("Nerd Alert • " + queue);
@@ -156,12 +156,12 @@ public class LeaguePremakeMessages {
         return embedBuilder.build();
     }
 
-    public MessageEmbed gameWon(String summonerName, int winStreak, String queue) {
+    public MessageEmbed winStreak(String summonerName, int winStreak, String queue) {
         EmbedBuilder embedBuilder = createBuilder();
         String desc = "%s was carried in his %s games %s times in a row! You can't even throw a game properly..".formatted(
-                    summonerName,
-                    queue,
-                    winStreak);
+                summonerName,
+                queue,
+                winStreak);
 
         embedBuilder.setDescription(desc);
         embedBuilder.setTitle("Nerd Alert • " + queue);
