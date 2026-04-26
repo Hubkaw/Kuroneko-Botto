@@ -25,7 +25,7 @@ public interface MatchSummonerRepository extends JpaRepository<MatchSummonerEnti
 
     @Query("SELECT ms FROM MatchSummonerEntity ms WHERE ms.match.matchId IN :matchIds AND ms.summoner.puuid = :puuid")
     List<MatchSummonerEntity> findByMatchIdsAndSummonerPuuid(
-            @Param("matchIds") Collection<Long> matchIds,
+            @Param("matchIds") Collection<String> matchIds,
             @Param("puuid") String puuid
     );
 }

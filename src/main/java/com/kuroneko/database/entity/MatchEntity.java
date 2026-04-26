@@ -17,7 +17,7 @@ import java.util.Set;
 @Setter
 public class MatchEntity {
     @Id
-    private Long matchId;
+    private String matchId;
 
     private int gameDuration;
     private long gameStart;

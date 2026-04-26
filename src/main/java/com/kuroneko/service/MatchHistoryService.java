@@ -50,9 +50,8 @@ public class MatchHistoryService {
                 .withPuuid(summonerEntity.getPuuid())
                 .get()));
 
-        List<Long> longMatchIds = matchIds.stream().map(id -> Long.parseLong(id.split("_")[1])).toList();
-        Map<Long, MatchSummonerEntity> existingMatchIdsForSummoner =
-                matchSummonerRepository.findByMatchIdsAndSummonerPuuid(longMatchIds, summonerEntity.getPuuid())
+        Map<String, MatchSummonerEntity> existingMatchIdsForSummoner =
+                matchSummonerRepository.findByMatchIdsAndSummonerPuuid(matchIds, summonerEntity.getPuuid())
                         .stream()
                         .collect(Collectors.toMap(
                                 matchSummonerEntity -> matchSummonerEntity.getMatch().getMatchId(),
@@ -60,10 +59,10 @@ public class MatchHistoryService {
                         ));
 
         List<String> newMatchIds = matchIds.stream()
-                .filter(matchId -> !existingMatchIdsForSummoner.containsKey(Long.parseLong(matchId.split("_")[1])))
+                .filter(matchId -> !existingMatchIdsForSummoner.containsKey(matchId))
                 .toList();
 
-        Map<Long, MatchParticipant> participantByMatchId = new HashMap<>();
+        Map<String, MatchParticipant> participantByMatchId = new HashMap<>();
         List<LOLMatch> lolMatches = new ArrayList<>();
 
         for (String matchId : newMatchIds) {
@@ -81,15 +80,15 @@ public class MatchHistoryService {
 
             if (matchParticipant != null) {
                 lolMatches.add(match);
-                participantByMatchId.put(match.getGameId(), matchParticipant);
+                participantByMatchId.put(matchId, matchParticipant);
             }
         }
 
-        List<Long> gameIds = lolMatches.stream()
-                .map(LOLMatch::getGameId)
+        List<String> gameIds = lolMatches.stream()
+                .map(lolMatch -> lolMatch.getPlatform().getValue() + "_" + lolMatch.getGameId())
                 .toList();
 
-        Map<Long, MatchEntity> existingMatches = new HashMap<>(matchRepository.findAllById(gameIds)
+        Map<String, MatchEntity> existingMatches = new HashMap<>(matchRepository.findAllById(gameIds)
                 .stream()
                 .collect(Collectors.toMap(
                         MatchEntity::getMatchId,
@@ -97,20 +96,21 @@ public class MatchHistoryService {
                 )));
 
         for (LOLMatch match : lolMatches) {
-            if (!existingMatches.containsKey(match.getGameId())) {
+            String matchId = match.getPlatform().getValue() + "_" + match.getGameId();
+            if (!existingMatches.containsKey(matchId)) {
                 newMatchPlayed = true;
-                MatchEntity newMatchEntity = MatchMapper.map(match);
+                MatchEntity newMatchEntity = MatchMapper.map(match, matchId);
 
                 newMatches.add(newMatchEntity);
                 newMatchSummoners.add(MatchSummonerMapper.map(
-                        newMatchEntity, summonerEntity, participantByMatchId.get(match.getGameId())
+                        newMatchEntity, summonerEntity, participantByMatchId.get(matchId)
                 ));
-            } else if (!existingMatchIdsForSummoner.containsKey(match.getGameId())) {
+            } else if (!existingMatchIdsForSummoner.containsKey(matchId)) {
                 newMatchSummoner = true;
 
-                MatchEntity newMatchEntity = existingMatches.get(match.getGameId());
+                MatchEntity newMatchEntity = existingMatches.get(matchId);
                 newMatchSummoners.add(MatchSummonerMapper.map(
-                        newMatchEntity, summonerEntity, participantByMatchId.get(match.getGameId())
+                        newMatchEntity, summonerEntity, participantByMatchId.get(matchId)
                 ));
             }
         }
