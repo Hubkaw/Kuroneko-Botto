@@ -38,6 +38,7 @@ public class MatchHistoryService {
         List<MatchSummonerEntity> newMatchSummoners = new ArrayList<>();
 
         boolean newMatchPlayed = false;
+        boolean newMatchSummoner = false;
         boolean isNewSummoner = !matchSummonerRepository.existsBySummonerPuuid(summonerEntity.getPuuid());
 
         int fetchCount = isNewSummoner ? API_FETCH_MATCHES_NEW_SUMMONER : API_FETCH_MATCHES_CRON;
@@ -75,17 +76,34 @@ public class MatchHistoryService {
                 .map(LOLMatch::getGameId)
                 .toList();
 
-        Set<Long> existingMatchIds = new HashSet<>(matchRepository.findAllById(gameIds)
+        Map<Long, MatchEntity> existingMatches = new HashMap<>(matchRepository.findAllById(gameIds)
                 .stream()
-                .map(MatchEntity::getMatchId)
-                .toList());
+                .collect(Collectors.toMap(
+                        MatchEntity::getMatchId,
+                        matchEntity -> matchEntity
+                )));
+
+        Map<Long, MatchSummonerEntity> existingMatchIdsForSummoner =
+                matchSummonerRepository.findByMatchIdsAndSummonerPuuid(gameIds, summonerEntity.getPuuid())
+                        .stream()
+                        .collect(Collectors.toMap(
+                                matchSummonerEntity -> matchSummonerEntity.getMatch().getMatchId(),
+                                matchSummonerEntity -> matchSummonerEntity
+                        ));
 
         for (LOLMatch match : lolMatches) {
-            if (!existingMatchIds.contains(match.getGameId())) {
+            if (!existingMatches.containsKey(match.getGameId())) {
                 newMatchPlayed = true;
                 MatchEntity newMatchEntity = MatchMapper.map(match);
 
                 newMatches.add(newMatchEntity);
+                newMatchSummoners.add(MatchSummonerMapper.map(
+                        newMatchEntity, summonerEntity, participantByMatchId.get(match.getGameId())
+                ));
+            } else if (!existingMatchIdsForSummoner.containsKey(match.getGameId())) {
+                newMatchSummoner = true;
+
+                MatchEntity newMatchEntity = existingMatches.get(match.getGameId());
                 newMatchSummoners.add(MatchSummonerMapper.map(
                         newMatchEntity, summonerEntity, participantByMatchId.get(match.getGameId())
                 ));
@@ -94,10 +112,12 @@ public class MatchHistoryService {
 
         if (newMatchPlayed) {
             matchRepository.saveAll(newMatches);
-            matchSummonerRepository.saveAll(newMatchSummoners);
+            matchSummonerRepository.saveAllAndFlush(newMatchSummoners);
+        } else if (newMatchSummoner) {
+            matchSummonerRepository.saveAllAndFlush(newMatchSummoners);
         }
 
-        if (newMatchPlayed && !isNewSummoner) {
+        if ((newMatchPlayed || newMatchSummoner) && !isNewSummoner) {
             List<MatchSummonerEntity> lastMatches = matchSummonerRepository.findLastMatchesBySummonerId(summonerEntity.getPuuid(), DB_FETCH_MATCHES);
 
             if (lastMatches.isEmpty()) {

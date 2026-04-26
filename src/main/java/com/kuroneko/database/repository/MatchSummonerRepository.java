@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
@@ -21,4 +22,10 @@ public interface MatchSummonerRepository extends JpaRepository<MatchSummonerEnti
     List<MatchSummonerEntity> findLastMatchesBySummonerId(@Param("puuid") String puuid, @Param("matches") int matches);
 
     boolean existsBySummonerPuuid(String puuid);
+
+    @Query("SELECT ms FROM MatchSummonerEntity ms WHERE ms.match.matchId IN :matchIds AND ms.summoner.puuid = :puuid")
+    List<MatchSummonerEntity> findByMatchIdsAndSummonerPuuid(
+            @Param("matchIds") Collection<Long> matchIds,
+            @Param("puuid") String puuid
+    );
 }
