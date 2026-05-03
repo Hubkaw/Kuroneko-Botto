@@ -17,6 +17,7 @@ public class CONSTANTS {
     public static final int LOG_ARGUMENT_CHUNK_SIZE = 255;
 
     public static final List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5, GameQueueType.TEAM_BUILDER_RANKED_SOLO);
+    public static final List<GameQueueType> RELEVANT_QUEUES_MATCH_HISTORY = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.TEAM_BUILDER_RANKED_SOLO);
 
     public static final int API_FETCH_MATCHES_CRON = 5;
     public static final int API_FETCH_MATCHES_NEW_SUMMONER = 15;
