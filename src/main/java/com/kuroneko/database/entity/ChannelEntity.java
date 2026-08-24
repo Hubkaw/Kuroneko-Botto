@@ -6,9 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Data
@@ -26,11 +24,6 @@ public class ChannelEntity {
 
     @Column
     private Long guildId;
-
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    @OneToMany(mappedBy = "channel")
-    private Set<PlayerCharacterEntity> characters = new HashSet<>();
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude

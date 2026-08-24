@@ -4,7 +4,6 @@ import com.kuroneko.database.entity.ChannelEntity;
 import com.kuroneko.database.entity.RankEntity;
 import com.kuroneko.database.entity.SummonerEntity;
 import com.kuroneko.database.repository.ChannelRepository;
-import com.kuroneko.database.repository.SummonerRepository;
 import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.KuronekoEmbed;
 import com.kuroneko.misc.LeagueTierHelper;
@@ -15,7 +14,6 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.InteractionHook;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
-import net.dv8tion.jda.api.requests.restaction.interactions.ReplyCallbackAction;
 import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
 import org.springframework.stereotype.Component;
 

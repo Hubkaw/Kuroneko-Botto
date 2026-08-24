@@ -8,7 +8,6 @@ import com.kuroneko.database.repository.MemberChannelRepository;
 import com.kuroneko.interaction.SlashInteraction;
 import com.kuroneko.misc.KuronekoEmbed;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent;

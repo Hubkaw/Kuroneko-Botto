@@ -32,7 +32,7 @@ public class KuronekoBotto {
                 .addEventListeners(vcuh)
                 .addEventListeners(cmm)
                 .addEventListeners(bim)
-                .setActivity(Activity.listening("Ride on Time"))
+                .setActivity(Activity.listening("Lady Pank - Tacy Sami"))
                 .setAudioModuleConfig(
                         new AudioModuleConfig()
                                 .withDaveSessionFactory(new JDaveSessionFactory())

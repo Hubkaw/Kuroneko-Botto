@@ -103,7 +103,7 @@ public class LeaguePremakeMessages {
 
         String desc = "%s has reached %s on %s. Senpai.. You shouldn't play this much...".formatted(
                 summonerName,
-                roundDownMasteryPoints(championMastery),
+                masteryFormat.format(roundDownMasteryPoints(championMastery)),
                 championName);
 
         embedBuilder.setDescription(desc);

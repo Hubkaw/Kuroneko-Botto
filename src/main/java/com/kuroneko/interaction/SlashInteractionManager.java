@@ -45,6 +45,11 @@ public class SlashInteractionManager extends ListenerAdapter {
 
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
+
+        event.getGuild().retrieveCommands().complete().stream()
+                .filter(c -> !interactionMap.containsKey(c.getName()))
+                .forEach(c -> event.getGuild().deleteCommandById(c.getId()).queue());
+
         interactionMap.forEach((k, i) -> event.getGuild().upsertCommand(i.getCommand()).queue());
     }
 

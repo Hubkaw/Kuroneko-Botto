@@ -34,7 +34,7 @@ public class PlayerManager {
         youtubeSourceOptions.setAllowSearch(true);
         youtubeSourceOptions.setRemoteCipher("https://cipher.kikkia.dev/", "", "Kuroneko-Botto");
 
-        YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(youtubeSourceOptions, new Music(), new WebEmbedded(), new Web(), new Tv());
+        YoutubeAudioSourceManager youtube = new YoutubeAudioSourceManager(youtubeSourceOptions, new Music(), new WebEmbedded(), new Web(), new Tv(), new TvHtml5Simply());
         youtube.useOauth2(kuronekoTokens.youtube(), true);
         audioPlayerManager.registerSourceManager(youtube);
         AudioSourceManagers.registerLocalSource(audioPlayerManager);
