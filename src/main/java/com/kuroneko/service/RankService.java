@@ -46,7 +46,9 @@ public class RankService {
     public List<MessageEmbed> checkRanks(Summoner summoner, SummonerEntity summonerEntity) {
 
         List<MessageEmbed> result = new ArrayList<>();
-        summoner.getLeagueEntry().forEach(leagueEntry -> {
+        summoner.getLeagueEntry().stream()
+                .filter(leagueEntry -> RELEVANT_QUEUES.contains(leagueEntry.getQueueType()))
+                .forEach(leagueEntry -> {
             Optional<RankEntity> find = rankRepository.findByQueueAndSummoner(leagueEntry.getQueueType(), summonerEntity);
             if (find.isEmpty()) {
                 RankEntity rankEntity = RankMapper.map(leagueEntry, summonerEntity);

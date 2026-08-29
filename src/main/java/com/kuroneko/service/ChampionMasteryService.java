@@ -62,52 +62,55 @@ public class ChampionMasteryService {
         List<MessageEmbed> result = new ArrayList<>();
         List<ChampionMasteryEntity> masteriesEntities = cmRepository.findAllBySummoner(summonerEntity);
         List<ChampionMastery> championMasteries = summoner.getChampionMasteries();
-        championMasteries.forEach(apiCM -> {
-            ChampionMasteryEntity dbCM = masteriesEntities.stream().filter(cm -> cm.getChampion().getId() == apiCM.getChampionId()).findFirst().orElse(null);
+        championMasteries.stream()
+                .filter(cm -> !isClassicChampion(cm))
+                .forEach(apiCM -> {
+                    ChampionMasteryEntity dbCM = masteriesEntities.stream()
+                            .filter(cm -> cm.getChampion().getId() == apiCM.getChampionId()).findFirst().orElse(null);
 
-            if (dbCM == null) {
-                ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
-                if (championEntity == null) {
-                    log.info("Could not find champion entity with id {}", apiCM.getChampionId());
-                    championEntity = loadNewChampion(apiCM.getChampionId());
-                    if (championEntity == null) {
+                    if (dbCM == null) {
+                        ChampionEntity championEntity = championRepository.findById(apiCM.getChampionId()).orElse(null);
+                        if (championEntity == null) {
+                            log.info("Could not find champion entity with id {}", apiCM.getChampionId());
+                            championEntity = loadNewChampion(apiCM.getChampionId());
+                            if (championEntity == null) {
+                                return;
+                            }
+                            log.info("Loaded champion entity with id {} name {}", apiCM.getChampionId(), championEntity.getName());
+                        }
+                        ChampionMasteryEntity newCME = ChampionMasteryMapper.map(apiCM, championEntity, summonerEntity);
+                        cmRepository.save(newCME);
                         return;
                     }
-                    log.info("Loaded champion entity with id {} name {}", apiCM.getChampionId(), championEntity.getName());
-                }
-                ChampionMasteryEntity newCME = ChampionMasteryMapper.map(apiCM, championEntity, summonerEntity);
-                cmRepository.save(newCME);
-                return;
-            }
 
-            boolean isChanged = false;
+                    boolean isChanged = false;
 
-            if (apiCM.getChampionLevel() != dbCM.getLevel()) {
+                    if (apiCM.getChampionLevel() != dbCM.getLevel()) {
 
-                if (hasPassedInterval(apiCM.getChampionLevel(), dbCM.getLevel(), MASTERY_LEVEL_MESSAGE_INTERVAL)) {
-                    result.add(leaguePremakeMessages.championLevelUpdateBy10(apiCM, summonerEntity.getRiotId(), dbCM.getChampion().getName()));
-                }
+                        if (hasPassedInterval(apiCM.getChampionLevel(), dbCM.getLevel(), MASTERY_LEVEL_MESSAGE_INTERVAL)) {
+                            result.add(leaguePremakeMessages.championLevelUpdateBy10(apiCM, summonerEntity.getRiotId(), dbCM.getChampion().getName()));
+                        }
 
-                dbCM.setLevel(apiCM.getChampionLevel());
-                isChanged = true;
-            }
+                        dbCM.setLevel(apiCM.getChampionLevel());
+                        isChanged = true;
+                    }
 
-            if (apiCM.getChampionPoints() != dbCM.getPoints()) {
+                    if (apiCM.getChampionPoints() != dbCM.getPoints()) {
 
-                if (hasPassedInterval(apiCM.getChampionPoints(), dbCM.getPoints(), MASTERY_POINTS_BIG_MESSAGE_INTERVAL)) {
-                    result.add(leaguePremakeMessages.championMastery1m(apiCM, summonerEntity.getRiotId(), dbCM.getChampion().getName()));
-                } else if (hasPassedInterval(apiCM.getChampionPoints(), dbCM.getPoints(), MASTERY_POINTS_MESSAGE_INTERVAL)) {
-                    result.add(leaguePremakeMessages.championMastery100k(apiCM, summonerEntity.getRiotId(), dbCM.getChampion().getName()));
-                }
+                        if (hasPassedInterval(apiCM.getChampionPoints(), dbCM.getPoints(), MASTERY_POINTS_BIG_MESSAGE_INTERVAL)) {
+                            result.add(leaguePremakeMessages.championMastery1m(apiCM, summonerEntity.getRiotId(), dbCM.getChampion().getName()));
+                        } else if (hasPassedInterval(apiCM.getChampionPoints(), dbCM.getPoints(), MASTERY_POINTS_MESSAGE_INTERVAL)) {
+                            result.add(leaguePremakeMessages.championMastery100k(apiCM, summonerEntity.getRiotId(), dbCM.getChampion().getName()));
+                        }
 
-                dbCM.setPoints(apiCM.getChampionPoints());
-                isChanged = true;
-            }
+                        dbCM.setPoints(apiCM.getChampionPoints());
+                        isChanged = true;
+                    }
 
-            if (isChanged) {
-                cmRepository.save(dbCM);
-            }
-        });
+                    if (isChanged) {
+                        cmRepository.save(dbCM);
+                    }
+                });
         return result;
     }
 
@@ -125,5 +128,9 @@ public class ChampionMasteryService {
 
         ChampionEntity entity = ChampionMapper.map(staticChampion);
         return championRepository.save(entity);
+    }
+
+    private boolean isClassicChampion(ChampionMastery cm) {
+        return cm.getChampionId() >= 60000;
     }
 }

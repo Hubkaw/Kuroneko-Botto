@@ -4,6 +4,8 @@ import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
 
 import java.util.List;
 
+import static no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType.*;
+
 public class CONSTANTS {
     public static final int LOWEST_DICE_VALUE = 2;
     public static final int HIGHEST_DICE_VALUE = 10000;
@@ -16,8 +18,8 @@ public class CONSTANTS {
 
     public static final int LOG_ARGUMENT_CHUNK_SIZE = 255;
 
-    public static final List<GameQueueType> RELEVANT_QUEUES = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.RANKED_SOLO_5X5, GameQueueType.TEAM_BUILDER_RANKED_SOLO);
-    public static final List<GameQueueType> RELEVANT_QUEUES_MATCH_HISTORY = List.of(GameQueueType.RANKED_FLEX_SR, GameQueueType.TEAM_BUILDER_RANKED_SOLO);
+    public static final List<GameQueueType> RELEVANT_QUEUES = List.of(RANKED_FLEX_SR, RANKED_SOLO_5X5, RANKED_PREMADE_5X5);
+    public static final List<GameQueueType> RELEVANT_QUEUES_MATCH_HISTORY = List.of(RANKED_FLEX_SR, TEAM_BUILDER_RANKED_SOLO);
 
     public static final int API_FETCH_MATCHES_CRON = 20;
     public static final int API_FETCH_MATCHES_NEW_SUMMONER = 20;
