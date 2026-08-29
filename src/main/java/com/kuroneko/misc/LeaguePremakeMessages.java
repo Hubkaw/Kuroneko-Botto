@@ -5,6 +5,7 @@ import com.kuroneko.service.DDragonService;
 import lombok.AllArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
 import no.stelar7.api.r4j.pojo.lol.championmastery.ChampionMastery;
 import no.stelar7.api.r4j.pojo.lol.league.LeagueEntry;
 import no.stelar7.api.r4j.pojo.lol.summoner.Summoner;
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.text.DecimalFormat;
+import java.util.Map;
+
+import static no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType.*;
 
 @AllArgsConstructor
 @Component
@@ -20,6 +24,11 @@ public class LeaguePremakeMessages {
     private static final DecimalFormat masteryFormat = new DecimalFormat("###,###,###");
 
     private DDragonService dDragonService;
+
+    private static final Map<GameQueueType, String> RELEVANT_QUEUE_NAMES = Map.of(
+            RANKED_FLEX_SR, "Flex Queue",
+            RANKED_SOLO_5X5, "Solo Queue",
+            RANKED_PREMADE_5X5, "Ranked 5s Queue");
 
     public MessageEmbed nameChangeMessage(SummonerEntity summonerEntity, String oldName) {
         EmbedBuilder embedBuilder = createBuilder();
@@ -52,7 +61,7 @@ public class LeaguePremakeMessages {
 
     public MessageEmbed tierUpMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
-        String queueName = leagueEntry.getQueueType().prettyName();
+        String queueName = RELEVANT_QUEUE_NAMES.get(leagueEntry.getQueueType());
 
         String desc = "%s has ranked up in %s, how cute :3. %nCurrent rank: %s %s LP%n"
                 .formatted(
@@ -71,7 +80,7 @@ public class LeaguePremakeMessages {
 
     public MessageEmbed tierDownMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
-        String queueName = leagueEntry.getQueueType().prettyName();
+        String queueName = RELEVANT_QUEUE_NAMES.get(leagueEntry.getQueueType());
 
         String desc = "%s has de-ranked in %s, what a loser.. %nCurrent rank: %s %s LP%n"
                 .formatted(

@@ -3,6 +3,7 @@ package com.kuroneko.config;
 import no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType;
 
 import java.util.List;
+import java.util.Map;
 
 import static no.stelar7.api.r4j.basic.constants.types.lol.GameQueueType.*;
 
