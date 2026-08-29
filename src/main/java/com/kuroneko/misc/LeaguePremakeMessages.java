@@ -61,7 +61,7 @@ public class LeaguePremakeMessages {
 
     public MessageEmbed tierUpMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
-        String queueName = RELEVANT_QUEUE_NAMES.get(leagueEntry.getQueueType());
+        String queueName = prepareQueueName(leagueEntry);
 
         String desc = "%s has ranked up in %s, how cute :3. %nCurrent rank: %s %s LP%n"
                 .formatted(
@@ -80,7 +80,7 @@ public class LeaguePremakeMessages {
 
     public MessageEmbed tierDownMessage(LeagueEntry leagueEntry, SummonerEntity summonerEntity) {
         EmbedBuilder embedBuilder = createBuilder();
-        String queueName = RELEVANT_QUEUE_NAMES.get(leagueEntry.getQueueType());
+        String queueName = prepareQueueName(leagueEntry);
 
         String desc = "%s has de-ranked in %s, what a loser.. %nCurrent rank: %s %s LP%n"
                 .formatted(
@@ -239,4 +239,8 @@ public class LeaguePremakeMessages {
         return minutes + "m " + remainingSeconds + "s";
     }
 
+    private String prepareQueueName(LeagueEntry leagueEntry) {
+        String result = RELEVANT_QUEUE_NAMES.get(leagueEntry.getQueueType());
+        return result == null ? "some irrelevant queue" : result;
+    }
 }
