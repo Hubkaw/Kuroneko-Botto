@@ -231,12 +231,12 @@ public class LeaguePremakeMessages {
     }
 
     public static String formatDuration(int seconds) {
-        if (seconds < 60) {
-            return seconds + "s";
-        }
-        int minutes = seconds / 60;
-        int remainingSeconds = seconds % 60;
-        return minutes + "m " + remainingSeconds + "s";
+        int s = seconds % 60;
+        int m = seconds / 60 % 60;
+        int h = seconds / 3600;
+        if (seconds < 60)   return "%ds".formatted(s);
+        if (seconds < 3600) return "%dm %ds".formatted(m, s);
+        return "%dh %dm %ds".formatted(h, m, s);
     }
 
     private String prepareQueueName(LeagueEntry leagueEntry) {
